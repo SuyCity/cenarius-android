@@ -18,11 +18,8 @@
 */
 package org.crosswalk.engine;
 
-import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 import android.webkit.ValueCallback;
 
 import org.apache.cordova.CordovaDialogsHelper;

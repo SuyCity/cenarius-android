@@ -1,13 +1,7 @@
 package com.m.cenarius.resourceproxy.network;
 
-import com.m.cenarius.resourceproxy.cache.CacheHelper;
-import com.m.cenarius.resourceproxy.cache.InternalCache;
 import com.m.cenarius.route.Route;
 import com.m.cenarius.route.RouteManager;
-import com.m.cenarius.utils.LogUtils;
-
-import org.xutils.http.RequestParams;
-import org.xutils.x;
 
 import java.util.List;
 

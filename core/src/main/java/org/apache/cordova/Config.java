@@ -22,7 +22,6 @@ package org.apache.cordova;
 import java.util.List;
 
 import android.app.Activity;
-import android.util.Log;
 
 @Deprecated // Use Whitelist, CordovaPrefences, etc. directly.
 public class Config {

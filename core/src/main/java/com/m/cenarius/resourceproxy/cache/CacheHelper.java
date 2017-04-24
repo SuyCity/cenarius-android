@@ -1,11 +1,6 @@
 package com.m.cenarius.resourceproxy.cache;
 
-import android.net.Uri;
-
-import com.m.cenarius.Constants;
-import com.m.cenarius.route.Route;
 import com.m.cenarius.route.RouteManager;
-import com.m.cenarius.utils.LogUtils;
 
 import java.io.File;
 

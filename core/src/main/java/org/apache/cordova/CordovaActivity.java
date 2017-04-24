@@ -30,7 +30,6 @@ import org.crosswalk.engine.XWalkCordovaView;
 import org.crosswalk.engine.XWalkWebViewEngine;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xwalk.core.XWalkPreferences;
 
 import android.app.AlertDialog;
 import android.annotation.SuppressLint;
@@ -50,11 +49,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 
 import com.m.cenarius.activity.CNRSViewActivity;
 import com.m.cenarius.view.CenariusXWalkCordovaResourceClient;
-import com.m.cenarius.view.WebViewSettings;
 
 /**
  * This class is the main Android activity that represents the Cordova

@@ -65,7 +65,7 @@ public class XutilsHttpManager implements HttpManager {
 
     @Override
     public <T> T requestSync(HttpMethod method, RequestParams entity, Class<T> resultType) throws Throwable {
-        XutilsHttpManager.DefaultSyncCallback<T> callback = new XutilsHttpManager.DefaultSyncCallback<T>(resultType);
+        DefaultSyncCallback<T> callback = new DefaultSyncCallback<T>(resultType);
         return requestSync(method, entity, callback);
     }
 

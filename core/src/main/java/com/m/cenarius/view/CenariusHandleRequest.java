@@ -1,27 +1,9 @@
 package com.m.cenarius.view;
 
-import android.net.Uri;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-import android.webkit.MimeTypeMap;
-import android.webkit.WebResourceResponse;
 
-import com.m.cenarius.Cenarius;
 import com.m.cenarius.Constants;
-import com.m.cenarius.resourceproxy.cache.AssetCache;
-import com.m.cenarius.resourceproxy.cache.InternalCache;
-import com.m.cenarius.route.Route;
-import com.m.cenarius.route.RouteManager;
-import com.m.cenarius.utils.MimeUtils;
-import com.m.cenarius.utils.io.IOUtils;
 
-import org.xutils.http.RequestParams;
-import org.xutils.x;
-
-import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.util.List;
 
 /**

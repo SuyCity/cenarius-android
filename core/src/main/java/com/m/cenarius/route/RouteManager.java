@@ -29,7 +29,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -507,7 +506,7 @@ public class RouteManager {
      */
     private void downloadConfig() {
         setStateAndProcess(RouteRefreshCallback.State.DOWNLOAD_CONFIG, 0);
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(remoteFolderUrl).client(OkHttpClientHelper.getDefaultClient()).build();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(remoteFolderUrl).client(OkHttpClientHelper.getDefaultClient(true)).build();
         DownloadService downloadService = retrofit.create(DownloadService.class);
         Call<ResponseBody> call = downloadService.downloadConfig(configUrl);
         call.enqueue(new Callback<ResponseBody>() {
@@ -641,15 +640,20 @@ public class RouteManager {
 
     private void copyWWW() {
         // 正在拷贝www
-        copyFileCount++;
-        process = copyFileCount * 100 / resourceRoutes.size();
-        if (process > 100) {
-            process = 100;
+        try {
+            copyFileCount++;
+            process = copyFileCount * 100 / resourceRoutes.size();
+            if (process > 100) {
+                process = 100;
+            }
+            if (shouldDownloadWWW) {
+                process = process / 2;
+            }
+            setStateAndProcess(RouteRefreshCallback.State.COPY_WWW, process);
+        } catch (Exception e) {
+            e.printStackTrace();
+            //646空指针
         }
-        if (shouldDownloadWWW) {
-            process = process / 2;
-        }
-        setStateAndProcess(RouteRefreshCallback.State.COPY_WWW, process);
     }
 
     private void copyWWWSuccess() {

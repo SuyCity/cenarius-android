@@ -2,13 +2,10 @@ package com.m.cenarius.utils;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
-
-import com.m.cenarius.R;
 
 import java.util.List;
 
@@ -33,6 +30,15 @@ public class Utils {
     public static boolean hasLollipop() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
+
+    public static boolean isUseXwalkLib(){
+        if(Build.CPU_ABI.toLowerCase().contains("x86") || Build.CPU_ABI2.toLowerCase().contains("x86") || Utils.hasLollipop()){
+           return false;
+        }
+
+        return true;
+    }
+
 
     public static boolean hasM() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;

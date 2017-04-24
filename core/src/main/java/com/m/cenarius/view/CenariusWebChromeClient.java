@@ -18,8 +18,6 @@ import org.xutils.common.util.LogUtil;
 
 import java.util.regex.Matcher;
 
-import static com.m.cenarius.R.id.progressBar;
-
 public class CenariusWebChromeClient extends WebChromeClient{
     private ProgressBar progressBar;
     private boolean isShowOver = false;

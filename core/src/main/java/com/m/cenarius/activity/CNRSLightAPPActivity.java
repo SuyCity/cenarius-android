@@ -1,11 +1,7 @@
 package com.m.cenarius.activity;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -22,7 +18,6 @@ import android.view.View;
 import android.webkit.GeolocationPermissions;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -36,16 +31,7 @@ import com.m.cenarius.view.CenariusWebViewClient;
 import com.m.cenarius.view.WebViewSettings;
 import com.m.cenarius.widget.ToastWidget;
 
-import org.apache.cordova.engine.SystemWebView;
-import org.crosswalk.engine.XWalkCordovaView;
 import org.greenrobot.eventbus.EventBus;
-import org.xutils.common.util.LogUtil;
-import org.xwalk.core.XWalkView;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.regex.Pattern;
 
 public class CNRSLightAPPActivity extends AppCompatActivity implements View.OnClickListener {
 

@@ -1,7 +1,5 @@
 package com.m.cenarius.utils;
 
-import android.net.Uri;
-
 import org.xutils.http.RequestParams;
 
 import java.io.UnsupportedEncodingException;
@@ -59,7 +57,7 @@ public class QueryUtil {
             for (String nameValuePair : nameValuePairs) {
                 String[] nameValue = nameValuePair.split("=");
                 String key = URLDecoder.decode(nameValue[0], "UTF-8");
-                String value = URLDecoder.decode(nameValuePair.substring(key.length() + 1), "UTF-8");
+                String value = URLDecoder.decode(nameValuePair.substring(nameValue[0].length() + 1), "UTF-8");
                 map = addItemToMap(map, value, key);
             }
         } catch (UnsupportedEncodingException e) {

@@ -1,9 +1,5 @@
 package com.m.cenarius.resourceproxy.network;
 
-import android.text.TextUtils;
-
-import com.m.cenarius.Constants;
-
 import java.util.ArrayList;
 import java.util.List;
 

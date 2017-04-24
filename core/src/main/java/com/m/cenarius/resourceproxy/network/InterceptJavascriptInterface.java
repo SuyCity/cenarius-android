@@ -1,15 +1,6 @@
 package com.m.cenarius.resourceproxy.network;
 
-import com.alibaba.fastjson.JSON;
 import com.m.cenarius.utils.OpenApi;
-import com.m.cenarius.utils.QueryUtil;
-import com.m.cenarius.view.CenariusWebViewClient;
-import com.m.cenarius.view.CenariusXWalkCordovaResourceClient;
-
-import org.xutils.http.RequestParams;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * 拦截 ajax

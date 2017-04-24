@@ -41,9 +41,7 @@ import android.view.WindowManager;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 
-import com.m.cenarius.R;
 import com.m.cenarius.activity.CNRSViewFragment;
 import com.m.cenarius.view.CenariusXWalkCordovaResourceClient;
 

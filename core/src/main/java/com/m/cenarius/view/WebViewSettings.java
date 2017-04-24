@@ -9,8 +9,6 @@ import com.m.cenarius.Cenarius;
 import com.m.cenarius.utils.AppContext;
 import com.m.cenarius.utils.Utils;
 
-import org.xwalk.core.XWalkSettings;
-
 /**
  * Created by m on 2017/1/19.
  */

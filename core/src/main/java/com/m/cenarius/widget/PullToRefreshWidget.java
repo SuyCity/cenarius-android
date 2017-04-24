@@ -3,7 +3,6 @@ package com.m.cenarius.widget;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.view.View;
-import android.webkit.WebView;
 
 import com.m.cenarius.view.CenariusWebView;
 import com.m.cenarius.view.CenariusWidget;

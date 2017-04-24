@@ -1,7 +1,5 @@
 package com.m.cenarius.view;
 
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -10,19 +8,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebViewClient;
 
-import com.m.cenarius.Constants;
 import com.m.cenarius.Cenarius;
-import com.m.cenarius.route.Route;
-import com.m.cenarius.route.RouteManager;
-import com.m.cenarius.utils.LogUtils;
-import com.m.cenarius.utils.Utils;
 
 /**
  * route doLoadCache
@@ -148,9 +140,9 @@ public class CenariusWebViewCore extends SafeWebView {
         setBackgroundColor(Color.WHITE);
         WebSettings ws = getSettings();
         WebViewSettings.setupWebSettings(ws);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            setWebContentsDebuggingEnabled(Cenarius.DEBUG);
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            setWebContentsDebuggingEnabled(Cenarius.DEBUG);
+//        }
         if (null == mWebViewClient) {
             mWebViewClient = new CenariusWebViewClient(this);
         }

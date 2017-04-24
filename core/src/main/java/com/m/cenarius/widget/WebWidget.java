@@ -7,8 +7,6 @@ import com.m.cenarius.activity.CNRSViewActivity;
 import com.m.cenarius.utils.GsonHelper;
 import com.m.cenarius.view.CenariusWidget;
 
-import org.w3c.dom.Text;
-
 import java.util.HashMap;
 
 public class WebWidget implements CenariusWidget {

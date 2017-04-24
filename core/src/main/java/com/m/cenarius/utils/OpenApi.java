@@ -10,7 +10,6 @@ import org.xutils.common.util.KeyValue;
 import org.xutils.http.RequestParams;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.Collections;

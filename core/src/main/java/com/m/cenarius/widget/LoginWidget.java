@@ -13,9 +13,9 @@ import com.m.cenarius.utils.AppContext;
 import com.m.cenarius.utils.GsonHelper;
 import com.m.cenarius.utils.LogUtils;
 import com.m.cenarius.utils.OpenApi;
+import com.m.cenarius.utils.Utils;
 import com.m.cenarius.view.CenariusWidget;
 
-import org.apache.cordova.engine.SystemWebViewEngine;
 import org.xutils.common.Callback;
 import org.xutils.common.util.LogUtil;
 import org.xutils.http.RequestParams;
@@ -26,7 +26,6 @@ import org.xwalk.core.XWalkCookieManager;
 import java.net.HttpCookie;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -37,14 +36,6 @@ public class LoginWidget implements CenariusWidget {
 
     private static final String PREF_FILE_NAME = "cenarius_login";
     private static final String TOKEN_KEY = "access_token";
-
-    public static  boolean isX86;
-
-    static {
-        if(Build.CPU_ABI.toLowerCase().contains("x86") || Build.CPU_ABI2.toLowerCase().contains("x86") ){
-            isX86 = true;
-        }
-    }
 
     public interface LoginCallback {
         void onSuccess(String accessToken);
@@ -165,7 +156,7 @@ public class LoginWidget implements CenariusWidget {
 //		cookieManager.removeSessionCookie();
         String domainName="";
         XWalkCookieManager xwalkCookieManager =  null;
-        if(!isX86){
+        if(Utils.isUseXwalkLib()){
             xwalkCookieManager =  new XWalkCookieManager();
             xwalkCookieManager.setAcceptCookie(true);
             xwalkCookieManager.removeAllCookie();

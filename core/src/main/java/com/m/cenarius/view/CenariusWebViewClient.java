@@ -1,19 +1,14 @@
 package com.m.cenarius.view;
 
 import android.view.View;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.alibaba.fastjson.JSON;
 import com.m.cenarius.activity.CNRSViewActivity;
 import com.m.cenarius.resourceproxy.network.InterceptJavascriptInterface;
-import com.m.cenarius.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class CenariusWebViewClient extends WebViewClient {
 

@@ -5,12 +5,8 @@ import android.content.Context;
 import com.m.cenarius.Constants;
 import com.m.cenarius.route.Route;
 import com.m.cenarius.utils.AppContext;
-import com.m.cenarius.utils.LogUtils;
-import com.m.cenarius.utils.io.IOUtils;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 

@@ -2,26 +2,18 @@ package com.m.cenarius.view;
 
 import android.os.Handler;
 import android.view.View;
-import android.webkit.WebResourceResponse;
-import android.webkit.WebView;
 import android.widget.ProgressBar;
 
 import com.m.cenarius.activity.CNRSViewActivity;
 import com.m.cenarius.resourceproxy.network.InterceptJavascriptInterface;
-import com.m.cenarius.utils.Utils;
 
 import org.crosswalk.engine.XWalkCordovaResourceClient;
 import org.crosswalk.engine.XWalkWebViewEngine;
 import org.xutils.common.util.LogUtil;
 import org.xwalk.core.XWalkView;
-import org.xwalk.core.XWalkWebResourceRequest;
-import org.xwalk.core.XWalkWebResourceResponse;
 
-import java.io.InputStream;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class CenariusXWalkCordovaResourceClient extends XWalkCordovaResourceClient {
     private  ProgressBar progressBar;

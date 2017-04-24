@@ -1,17 +1,7 @@
 package com.m.cenarius.resourceproxy.cache;
-import android.content.res.AssetManager;
-import android.text.TextUtils;
+
 import com.m.cenarius.Constants;
 import com.m.cenarius.route.Route;
-import com.m.cenarius.route.RouteManager;
-import com.m.cenarius.utils.AppContext;
-import com.m.cenarius.utils.BusProvider;
-import com.m.cenarius.utils.LogUtils;
-
-import org.greenrobot.eventbus.EventBus;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * 预置到asset中的只读cache
