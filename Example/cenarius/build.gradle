@@ -20,6 +20,13 @@ android {
 }
 
 dependencies {
+    compile 'com.squareup.picasso:picasso:2.5.2'
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.alibaba:fastjson:1.1.56.android'
+    compile 'com.taobao.android:weex_sdk:0.11.0@aar'
+    compile 'com.squareup.retrofit2:retrofit:2.2.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha9'
 }
