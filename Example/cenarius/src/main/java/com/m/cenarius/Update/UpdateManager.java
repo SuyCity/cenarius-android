@@ -1,6 +1,11 @@
 package com.m.cenarius.Update;
 
 import android.app.Application;
+import android.content.Context;
+
+import com.m.cenarius.Native.Cenarius;
+
+import java.io.File;
 
 /**
  * Created by m on 2017/4/24.
@@ -21,18 +26,18 @@ public final class UpdateManager {
         UPDATE_SUCCESS, //更新文件成功
     }
 
-//    /*设置远程资源地址*/
-//    public static void setServerUrl(String url) {
-//        UpdateManager.serverUrl = url;
-//    }
-//
-//    public static void setDevelopMode(Boolean mode) {
-//        sharedInstance.developMode = mode;
-//    }
-//
-//    public static String getCacheUrl() {
-//        return UpdateManager.cacheUrl;
-//    }
+    /*设置远程资源地址*/
+    public static void setServerUrl(String url) {
+        UpdateManager.serverUrl = url;
+    }
+
+    public static void setDevelopMode(Boolean mode) {
+        sharedInstance.developMode = mode;
+    }
+
+    public static String getCacheUrl() {
+        return UpdateManager.cacheUrl;
+    }
 
     /*更新*/
     public interface UpdateCallback {
@@ -53,7 +58,16 @@ public final class UpdateManager {
     private static String resourceConfigUrl = resourceUrl + "/" + configName;
     private static String resourceFilesUrl = resourceUrl + "/" + filesName;
     private static String resourceZipUrl = resourceUrl + "/" + zipName;
+    private static String cacheUrl = Cenarius.application.getDir(wwwName, Context.MODE_PRIVATE).getPath();
+    private static String cacheConfigUrl = cacheUrl + "/" + configName;
+    private static String serverUrl;
+    private static String serverConfigUrl = serverUrl + "/" + configName;
+    private static String serverFilesUrl = serverUrl + "/" + filesName;
 
-
+    private Boolean developMode = false;
+    private UpdateCallback updateCallback;
+    private int progress = 0;
+    private Boolean isDownloadFileError = false;
+    private int downloadFilesCount = 0;
 
 }

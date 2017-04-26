@@ -2,8 +2,10 @@ package com.m.example;
 
 import android.app.Application;
 
+import com.m.cenarius.Native.Cenarius;
 import com.m.cenarius.Weex.ImageAdapter;
 import com.taobao.weex.InitConfig;
+import com.taobao.weex.WXEnvironment;
 import com.taobao.weex.WXSDKEngine;
 
 /**
@@ -20,6 +22,18 @@ public class MainApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        initCenarius();
+
+
+        initWeex();
+    }
+
+    void initCenarius() {
+        Cenarius.initialize(this);
+    }
+
+    void initWeex() {
         InitConfig config = new InitConfig.Builder().setImgAdapter(new ImageAdapter()).build();
         WXSDKEngine.initialize(this, config);
     }
