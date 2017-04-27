@@ -1,11 +1,24 @@
 package com.m.cenarius.Update;
 
-import android.app.Application;
 import android.content.Context;
 
+import com.alibaba.fastjson.JSON;
 import com.m.cenarius.Native.Cenarius;
+import com.orhanobut.logger.Logger;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
 
 /**
  * Created by m on 2017/4/24.
@@ -45,6 +58,9 @@ public final class UpdateManager {
     }
 
     private static UpdateManager sharedInstance = new UpdateManager();
+    private UpdateManager() {
+        EventBus.getDefault().register(this);
+    }
 
     private static String wwwName = "www";
     private static String zipName = "www.zip";
@@ -69,5 +85,84 @@ public final class UpdateManager {
     private int progress = 0;
     private Boolean isDownloadFileError = false;
     private int downloadFilesCount = 0;
+
+    private Realm mainRealm = Realm.getInstance(new RealmConfiguration.Builder().name(dbName).build());
+
+    private Config resourceConfig;
+    private String resourceFiles;
+    private Config cacheConfig;
+    private RealmResults<FileRealm> cacheFiles;
+    private Config serverConfig;
+    private String serverConfigData;
+    private String serverFiles;
+    private String downloadFiles;
+
+    private void update(UpdateCallback callback) {
+        updateCallback = callback;
+        // 开发模式，直接成功
+        if (developMode) {
+            complete(State.UPDATE_SUCCESS);
+            return;
+        }
+
+        // 重置变量
+        progress = 0;
+
+        loadLocalConfig();
+        loadLocalFiles();
+        downloadConfig();
+    }
+
+    /*加载本地的config*/
+    private void loadLocalConfig() {
+        File cacheConfigFile = new File(cacheConfigUrl);
+        try {
+            cacheConfig = JSON.parseObject(FileUtils.readFileToByteArray(cacheConfigFile), Config.class);
+        } catch (IOException e) {
+            cacheConfig = null;
+        }
+
+        try {
+            InputStream inputStream = Cenarius.application.getAssets().open(resourceConfigUrl);
+            resourceConfig = JSON.parseObject(IOUtils.toByteArray(inputStream), Config.class);
+        } catch (IOException e) {
+            Logger.e(e, "You must put " + configName + " file in www folder");
+        }
+    }
+
+    /*加载本地的路由表*/
+    private void loadLocalFiles() {
+        cacheFiles = mainRealm.where(FileRealm.class).findAll();
+        try {
+            InputStream inputStream = Cenarius.application.getAssets().open(resourceConfigUrl);
+            JSON.parseObject(IOUtils.toByteArray(inputStream), Config.class);
+        } catch (IOException e) {
+            Logger.e(e, "You must put " + filesName + " file in www folder");
+        }
+    }
+
+    private void downloadConfig() {
+        complete(State.DOWNLOAD_CONFIG_FILE);
+        
+    }
+
+    private void complete(State state) {
+        EventBus.getDefault().post(new MessageEvent(state));
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    private void onMessageEvent(MessageEvent event) {
+        updateCallback.completion(event.state, progress);
+    }
+
+
+    private static class MessageEvent {
+
+        public State state;
+
+        private MessageEvent(State state) {
+            this.state = state;
+        }
+    }
 
 }
