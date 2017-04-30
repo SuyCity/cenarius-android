@@ -143,7 +143,7 @@ public final class UpdateManager {
 
     private void downloadConfig() {
         complete(State.DOWNLOAD_CONFIG_FILE);
-        
+
     }
 
     private void complete(State state) {
