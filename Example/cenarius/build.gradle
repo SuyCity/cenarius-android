@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'realm-android'
+apply plugin: 'com.jakewharton.butterknife'
 
 android {
     compileSdkVersion 25
@@ -34,22 +35,26 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.7.0'
     // An image loading and caching library for Android focused on smooth scrolling
     // https://github.com/bumptech/glide
+    compile 'com.taobao.android:weex_sdk:0.11.0@aar'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.android.support:support-v4:25.3.1'
+    // A framework for building Mobile cross-platform UI
+    // https://github.com/alibaba/weex
     compile 'com.alibaba:fastjson:1.1.56.android'
     // A fast JSON parser/generator for Java
     // https://github.com/alibaba/fastjson
-    compile 'com.taobao.android:weex_sdk:0.11.0@aar'
-    // A framework for building Mobile cross-platform UI
-    // https://github.com/alibaba/weex
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
     // Type-safe HTTP client for Android and Java by Square, Inc.
     // https://github.com/square/retrofit
     compile 'org.zeroturnaround:zt-zip:1.11'
     // ZeroTurnaround ZIP Library
     // https://github.com/zeroturnaround/zt-zip
+    compile 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+    // Bind Android views and callbacks to fields and methods.
+    // https://github.com/JakeWharton/butterknife
 
-
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha9'
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:recyclerview-v7:25.3.1'
-    compile 'com.android.support:support-v4:25.3.1'
 }

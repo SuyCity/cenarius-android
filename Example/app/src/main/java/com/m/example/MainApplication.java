@@ -3,6 +3,7 @@ package com.m.example;
 import android.app.Application;
 
 import com.m.cenarius.Native.Cenarius;
+import com.m.cenarius.Update.UpdateManager;
 import com.m.cenarius.Weex.ImageAdapter;
 import com.taobao.weex.InitConfig;
 import com.taobao.weex.WXEnvironment;

@@ -66,6 +66,10 @@ public final class UpdateManager {
         return UpdateManager.cacheUrl;
     }
 
+    public static void update(UpdateCallback callback) {
+        sharedInstance.updateAction(callback);
+    }
+
     /*更新*/
     public interface UpdateCallback {
         void completion(State state, int progress);
@@ -112,7 +116,7 @@ public final class UpdateManager {
     private List<FileRealm> serverFiles;
     private List<FileRealm> downloadFiles;
 
-    private void update(UpdateCallback callback) {
+    private void updateAction(UpdateCallback callback) {
         updateCallback = callback;
         // 开发模式，直接成功
         if (developMode) {
