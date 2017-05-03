@@ -40,10 +40,12 @@ dependencies {
     compile 'com.taobao.android:weex_sdk:0.11.0@aar'
     // A framework for building Mobile cross-platform UI
     // https://github.com/alibaba/weex
-
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
     // Type-safe HTTP client for Android and Java by Square, Inc.
     // https://github.com/square/retrofit
+    compile 'org.zeroturnaround:zt-zip:1.11'
+    // ZeroTurnaround ZIP Library
+    // https://github.com/zeroturnaround/zt-zip
 
 
     compile fileTree(dir: 'libs', include: ['*.jar'])

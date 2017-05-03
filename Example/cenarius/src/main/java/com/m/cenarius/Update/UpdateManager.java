@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.alibaba.fastjson.JSON;
 import com.m.cenarius.Native.Cenarius;
+import com.m.cenarius.Network.Network;
+import com.m.cenarius.Utils.Utils;
 import com.orhanobut.logger.Logger;
 
 import org.apache.commons.io.FileUtils;
@@ -11,14 +13,21 @@ import org.apache.commons.io.IOUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.zeroturnaround.zip.ZipEntryCallback;
+import org.zeroturnaround.zip.ZipUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.zip.ZipEntry;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by m on 2017/4/24.
@@ -48,7 +57,7 @@ public final class UpdateManager {
         sharedInstance.developMode = mode;
     }
 
-    public static String getCacheUrl() {
+    public static File getCacheUrl() {
         return UpdateManager.cacheUrl;
     }
 
@@ -74,8 +83,8 @@ public final class UpdateManager {
     private static String resourceConfigUrl = resourceUrl + "/" + configName;
     private static String resourceFilesUrl = resourceUrl + "/" + filesName;
     private static String resourceZipUrl = resourceUrl + "/" + zipName;
-    private static String cacheUrl = Cenarius.application.getDir(wwwName, Context.MODE_PRIVATE).getPath();
-    private static String cacheConfigUrl = cacheUrl + "/" + configName;
+    private static File cacheUrl = Cenarius.application.getDir(wwwName, Context.MODE_PRIVATE);
+    private static File cacheConfigUrl = new File(cacheUrl, configName);
     private static String serverUrl;
     private static String serverConfigUrl = serverUrl + "/" + configName;
     private static String serverFilesUrl = serverUrl + "/" + filesName;
@@ -85,15 +94,16 @@ public final class UpdateManager {
     private int progress = 0;
     private Boolean isDownloadFileError = false;
     private int downloadFilesCount = 0;
+    private int unzipFilesCount = 0;
 
     private Realm mainRealm = Realm.getInstance(new RealmConfiguration.Builder().name(dbName).build());
 
     private Config resourceConfig;
-    private String resourceFiles;
+    private FileRealm[] resourceFiles;
     private Config cacheConfig;
     private RealmResults<FileRealm> cacheFiles;
     private Config serverConfig;
-    private String serverConfigData;
+    private byte[] serverConfigData;
     private String serverFiles;
     private String downloadFiles;
 
@@ -115,9 +125,8 @@ public final class UpdateManager {
 
     /*加载本地的config*/
     private void loadLocalConfig() {
-        File cacheConfigFile = new File(cacheConfigUrl);
         try {
-            cacheConfig = JSON.parseObject(FileUtils.readFileToByteArray(cacheConfigFile), Config.class);
+            cacheConfig = JSON.parseObject(FileUtils.readFileToByteArray(cacheConfigUrl), Config.class);
         } catch (IOException e) {
             cacheConfig = null;
         }
@@ -135,7 +144,7 @@ public final class UpdateManager {
         cacheFiles = mainRealm.where(FileRealm.class).findAll();
         try {
             InputStream inputStream = Cenarius.application.getAssets().open(resourceConfigUrl);
-            JSON.parseObject(IOUtils.toByteArray(inputStream), Config.class);
+            resourceFiles = JSON.parseObject(IOUtils.toByteArray(inputStream), FileRealm[].class);
         } catch (IOException e) {
             Logger.e(e, "You must put " + filesName + " file in www folder");
         }
@@ -143,6 +152,121 @@ public final class UpdateManager {
 
     private void downloadConfig() {
         complete(State.DOWNLOAD_CONFIG_FILE);
+        Call<ResponseBody> call = Network.requset(serverConfigUrl);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    try {
+                        serverConfigData = response.body().bytes();
+                        serverConfig = JSON.parseObject(serverConfigData, Config.class);
+                        if (isWwwFolderNeedsToBeInstalled()) {
+                            unzipWww();
+                        } else if (shouldDownloadWww()) {
+                            downloadFilesFile();
+                        } else {
+                            complete(State.UPDATE_SUCCESS);
+                        }
+                    } catch (IOException e) {
+                        Logger.e(e, "downloadConfig fail");
+                    }
+                } else {
+                    complete(State.DOWNLOAD_CONFIG_FILE_ERROR);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Logger.e(t, "downloadConfig fail");
+                complete(State.DOWNLOAD_CONFIG_FILE_ERROR);
+            }
+        });
+    }
+
+    private void downloadFilesFile() {
+        complete(State.DOWNLOAD_FILES_FILE);
+        loadLocalConfig();
+        loadLocalFiles();
+
+    }
+
+    private boolean isWwwFolderNeedsToBeInstalled() {
+        if (cacheConfig == null || Utils.compareVersion(cacheConfig.release, resourceConfig.release) < 0) {
+            //没有缓存或者缓存比预置低
+            return true;
+        }
+        return false;
+    }
+
+    private void unzipWww() {
+        complete(State.UNZIP_WWW);
+        mainRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.deleteAll();
+            }
+        });
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    FileUtils.deleteDirectory(cacheUrl);
+                    InputStream inputStream = Cenarius.application.getAssets().open(resourceZipUrl);
+                    ZipUtil.iterate(inputStream, new ZipEntryCallback() {
+                        @Override
+                        public void process(InputStream in, ZipEntry zipEntry) throws IOException {
+                            String name = zipEntry.getName();
+                            if (name != null) {
+                                File file = new File(cacheUrl, name);
+                                if (zipEntry.isDirectory()) {
+                                    org.zeroturnaround.zip.commons.FileUtils.forceMkdir(file);
+                                } else {
+                                    org.zeroturnaround.zip.commons.FileUtils.forceMkdir(file.getParentFile());
+                                    org.zeroturnaround.zip.commons.FileUtils.copy(in, file);
+                                    unzipFilesCount ++;
+                                    int progress = unzipFilesCount * 100 / resourceFiles.length;
+                                    if (shouldDownloadWww()) {
+                                        progress /= 2;
+                                    }
+                                    if (sharedInstance.progress != progress) {
+                                        sharedInstance.progress = progress;
+                                        complete(State.UNZIP_WWW);
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    unzipSuccess();
+                } catch (IOException e) {
+                    Logger.e(e, null);
+                    complete(State.UNZIP_WWW_ERROR);
+                }
+            }
+        }).start();
+    }
+
+    private boolean shouldDownloadWww() {
+        if (hasMinVersion(serverConfig)) {
+            // 满足最小版本要求
+            if (isWwwFolderNeedsToBeInstalled()) {
+                return Utils.compareVersion(serverConfig.release, resourceConfig.release) > 0;
+            } else {
+                return Utils.compareVersion(serverConfig.release, cacheConfig.release) > 0;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasMinVersion(Config serverConfig) {
+        String versionName = Utils.getAppVersionName();
+        if (versionName != null && serverConfig.android_min_version != null && Utils.compareVersion(versionName, serverConfig.android_min_version) >= 0) {
+            // 满足最小版本要求
+            return true;
+        }
+        return false;
+    }
+
+    private void unzipSuccess() {
 
     }
 

@@ -42,19 +42,19 @@ public class Network {
 
     }
 
-    public Call requset(String url) {
+    public static Call requset(String url) {
         return requset(url, null, null, null);
     }
 
-    public Call requset(String url, HTTPMethod method) {
+    public static Call requset(String url, HTTPMethod method) {
         return requset(url, method, null, null);
     }
 
-    public Call requset(String url, HTTPMethod method, Map<String, String> parameters) {
+    public static Call requset(String url, HTTPMethod method, Map<String, String> parameters) {
         return requset(url, method, parameters, null);
     }
 
-    public Call requset(String url, HTTPMethod method, Map<String, String> parameters, Map<String, String> headers) {
+    public static Call requset(String url, HTTPMethod method, Map<String, String> parameters, Map<String, String> headers) {
         Service service = retrofit.create(Service.class);
         if (method == HTTPMethod.POST) {
             return service.post(url, parameters, headers);
