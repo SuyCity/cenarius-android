@@ -3,6 +3,9 @@ package com.m.cenarius.Update;
 import android.content.Context;
 
 import com.alibaba.fastjson.JSON;
+import com.litesuits.go.OverloadPolicy;
+import com.litesuits.go.SchedulePolicy;
+import com.litesuits.go.SmartExecutor;
 import com.m.cenarius.Native.Cenarius;
 import com.m.cenarius.Network.Network;
 import com.m.cenarius.Utils.Utils;
@@ -19,6 +22,8 @@ import org.zeroturnaround.zip.ZipUtil;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 
 import io.realm.Realm;
@@ -80,14 +85,14 @@ public final class UpdateManager {
     private static int maxConcurrentOperationCount = 2;
 
     private static String resourceUrl = wwwName;
-    private static String resourceConfigUrl = resourceUrl + "/" + configName;
-    private static String resourceFilesUrl = resourceUrl + "/" + filesName;
-    private static String resourceZipUrl = resourceUrl + "/" + zipName;
+    private static String resourceConfigUrl = resourceUrl + File.separator + configName;
+    private static String resourceFilesUrl = resourceUrl + File.separator + filesName;
+    private static String resourceZipUrl = resourceUrl + File.separator + zipName;
     private static File cacheUrl = Cenarius.application.getDir(wwwName, Context.MODE_PRIVATE);
     private static File cacheConfigUrl = new File(cacheUrl, configName);
     private static String serverUrl;
-    private static String serverConfigUrl = serverUrl + "/" + configName;
-    private static String serverFilesUrl = serverUrl + "/" + filesName;
+    private static String serverConfigUrl = serverUrl + File.separator + configName;
+    private static String serverFilesUrl = serverUrl + File.separator + filesName;
 
     private Boolean developMode = false;
     private UpdateCallback updateCallback;
@@ -99,13 +104,13 @@ public final class UpdateManager {
     private Realm mainRealm = Realm.getInstance(new RealmConfiguration.Builder().name(dbName).build());
 
     private Config resourceConfig;
-    private FileRealm[] resourceFiles;
+    private List<FileRealm> resourceFiles;
     private Config cacheConfig;
     private RealmResults<FileRealm> cacheFiles;
     private Config serverConfig;
     private byte[] serverConfigData;
-    private String serverFiles;
-    private String downloadFiles;
+    private List<FileRealm> serverFiles;
+    private List<FileRealm> downloadFiles;
 
     private void update(UpdateCallback callback) {
         updateCallback = callback;
@@ -187,7 +192,123 @@ public final class UpdateManager {
         complete(State.DOWNLOAD_FILES_FILE);
         loadLocalConfig();
         loadLocalFiles();
+        Call<ResponseBody> call = Network.requset(serverFilesUrl);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    try {
+                        serverFiles = JSON.parseObject(response.body().bytes(), FileRealm[].class);
+                        downloadFiles = getDownloadFiles(serverFiles);
+                        if (downloadFiles.size() > 0) {
+                            downloadFiles(downloadFiles);
+                        } else {
+                            saveConfig();
+                            complete(State.UPDATE_SUCCESS);
+                        }
+                    } catch (IOException e) {
+                        Logger.e(e, "downloadFilesFile fail");
+                    }
+                } else {
+                    complete(State.DOWNLOAD_FILES_FILE_ERROR);
+                }
+            }
 
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Logger.e(t, "downloadFilesFile fail");
+                complete(State.DOWNLOAD_FILES_FILE_ERROR);
+            }
+        });
+    }
+
+    private void downloadFiles(List<FileRealm> files) {
+        final SmartExecutor smallExecutor = new SmartExecutor();
+        smallExecutor.setCoreSize(2);
+        smallExecutor.setQueueSize(files.size());
+        smallExecutor.setSchedulePolicy(SchedulePolicy.FirstInFistRun);
+        smallExecutor.setOverloadPolicy(OverloadPolicy.ThrowExecption);
+        downloadFilesCount = 0;
+        isDownloadFileError = false;
+        for (final FileRealm file : files) {
+            smallExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    if (!downloadFile(file, retry)) {
+                        smallExecutor.cancelWaitingTask(null);
+                    }
+                }
+            });
+        }
+    }
+
+    private boolean downloadFile(FileRealm file, int retry) {
+        Call<ResponseBody> call = Network.requset(serverUrl + File.separator + file.getPath());
+        try {
+            Response<ResponseBody> response = call.execute();
+            if (response.isSuccessful()) {
+                FileUtils.writeByteArrayToFile(new File(cacheUrl, file.getPath()), response.body().bytes());
+                downloadFileSuccess(file);
+                return true;
+            }
+        } catch (IOException e) {
+            Logger.e(e, null);
+        }
+        return downloadFileRetry(file, retry);
+    }
+
+    private boolean downloadFileRetry(FileRealm file, int retry) {
+        if (retry > 0) {
+            return downloadFile(file, retry - 1);
+        } else {
+            downloadFileError();
+            return false;
+        }
+    }
+
+    private void downloadFileSuccess(FileRealm file) {
+        EventBus.getDefault().post(new DownloadFileSuccessEvent(file));
+    }
+
+    private void downloadFileError() {
+        EventBus.getDefault().post(new DownloadFileErrorEvent());
+    }
+
+    private void saveConfig() {
+        try {
+            FileUtils.writeByteArrayToFile(cacheConfigUrl, serverConfigData);
+        } catch (IOException e) {
+            Logger.e(e, null);
+        }
+    }
+
+    private void saveFiles(final List<FileRealm> files) {
+        mainRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.deleteAll();
+                realm.insert(files);
+            }
+        });
+    }
+
+    private List<FileRealm> getDownloadFiles(List<FileRealm> serverFiles) {
+        List<FileRealm> downloadFiles = new ArrayList<>();
+        for (FileRealm file: serverFiles) {
+            if (shouldDownload(file)) {
+                downloadFiles.add(file);
+            }
+        }
+        return downloadFiles;
+    }
+
+    private boolean shouldDownload(FileRealm serverFile) {
+        for (FileRealm cacheFile: cacheFiles) {
+            if (cacheFile.getPath().equals(serverFile.getPath()) && cacheFile.getMd5().equals(serverFile.getMd5())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean isWwwFolderNeedsToBeInstalled() {
@@ -223,15 +344,7 @@ public final class UpdateManager {
                                 } else {
                                     org.zeroturnaround.zip.commons.FileUtils.forceMkdir(file.getParentFile());
                                     org.zeroturnaround.zip.commons.FileUtils.copy(in, file);
-                                    unzipFilesCount ++;
-                                    int progress = unzipFilesCount * 100 / resourceFiles.length;
-                                    if (shouldDownloadWww()) {
-                                        progress /= 2;
-                                    }
-                                    if (sharedInstance.progress != progress) {
-                                        sharedInstance.progress = progress;
-                                        complete(State.UNZIP_WWW);
-                                    }
+                                    unzipFileSuccess();
                                 }
                             }
                         }
@@ -243,6 +356,18 @@ public final class UpdateManager {
                 }
             }
         }).start();
+    }
+
+    private void unzipFileSuccess() {
+        unzipFilesCount ++;
+        int progress = unzipFilesCount * 100 / resourceFiles.size();
+        if (shouldDownloadWww()) {
+            progress /= 2;
+        }
+        if (this.progress != progress) {
+            this.progress = progress;
+            complete(State.UNZIP_WWW);
+        }
     }
 
     private boolean shouldDownloadWww() {
@@ -271,22 +396,70 @@ public final class UpdateManager {
     }
 
     private void complete(State state) {
-        EventBus.getDefault().post(new MessageEvent(state));
+        EventBus.getDefault().post(new CompleteEvent(state));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    private void onMessageEvent(MessageEvent event) {
+    private void onCompleteEvent(CompleteEvent event) {
         updateCallback.completion(event.state, progress);
     }
 
 
-    private static class MessageEvent {
+    private static class CompleteEvent {
 
         public State state;
 
-        private MessageEvent(State state) {
+        private CompleteEvent(State state) {
             this.state = state;
         }
     }
+
+    private static class DownloadFileSuccessEvent {
+
+        public FileRealm file;
+
+        private DownloadFileSuccessEvent(FileRealm file) {
+            this.file = file;
+        }
+    }
+
+    private static class DownloadFileErrorEvent {
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    private void onDownloadFileErrorEvent(DownloadFileErrorEvent event) {
+        if (!isDownloadFileError) {
+            isDownloadFileError = true;
+            complete(State.DOWNLOAD_FILES_ERROR);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    private void onDownloadFileSuccessEvent(final DownloadFileSuccessEvent event) {
+        if (isDownloadFileError) {
+            return;
+        }
+        mainRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.insertOrUpdate(event.file);
+            }
+        });
+        downloadFilesCount += 1;
+        int unzipProgress = progress;
+        int downloadProgress = downloadFilesCount * (100 - unzipProgress) / downloadFiles.size();
+        int progress = unzipProgress + downloadProgress;
+        if (this.progress != progress) {
+            this.progress = progress;
+            complete(State.DOWNLOAD_FILES);
+        }
+        if (downloadFilesCount == downloadFiles.size()) {
+            saveConfig();
+            saveFiles(serverFiles);
+            complete(State.UPDATE_SUCCESS);
+        }
+    }
+
 
 }
