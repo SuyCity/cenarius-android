@@ -410,6 +410,22 @@ public final class UpdateManager {
         updateCallback.completion(event.state, progress);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    protected void onUnzipSuccessEvent(UnzipSuccessEvent event) {
+        try {
+            InputStream inputStream = Cenarius.application.getAssets().open(resourceConfigUrl);
+            FileUtils.copyInputStreamToFile(inputStream, cacheConfigUrl);
+            saveFiles(resourceFiles);
+            if (shouldDownloadWww()) {
+                downloadFilesFile();
+            } else {
+                complete(State.UPDATE_SUCCESS);
+            }
+        } catch (IOException e) {
+            Logger.e(e, null);
+        }
+    }
+
 
     private static class CompleteEvent {
 
@@ -418,6 +434,10 @@ public final class UpdateManager {
         private CompleteEvent(State state) {
             this.state = state;
         }
+    }
+
+    private static class UnzipSuccessEvent {
+
     }
 
     private static class DownloadFileSuccessEvent {
