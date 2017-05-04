@@ -204,7 +204,7 @@ public final class UpdateManager {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     try {
-                        serverFiles = JSON.parseObject(response.body().bytes(), com.m.cenarius.Update.File.class);
+                        serverFiles = JSON.parseArray(response.body().string(), com.m.cenarius.Update.File.class);
                         downloadFiles = getDownloadFiles(serverFiles);
                         if (downloadFiles.size() > 0) {
                             downloadFiles(downloadFiles);
@@ -393,7 +393,6 @@ public final class UpdateManager {
     private boolean hasMinVersion(Config serverConfig) {
         String versionName = Utils.getAppVersionName();
         if (versionName != null && serverConfig.android_min_version != null && Utils.compareVersion(versionName, serverConfig.android_min_version) >= 0) {
-            // 满足最小版本要求
             return true;
         }
         return false;
