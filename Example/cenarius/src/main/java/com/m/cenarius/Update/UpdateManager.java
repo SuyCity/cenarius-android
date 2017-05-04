@@ -55,7 +55,9 @@ public final class UpdateManager {
 
     /*设置远程资源地址*/
     public static void setServerUrl(String url) {
-        UpdateManager.serverUrl = url;
+        serverUrl = url;
+        serverConfigUrl = serverUrl + File.separator + configName;
+        serverFilesUrl = serverUrl + File.separator + filesName;
     }
 
     public static void setDevelopMode(Boolean mode) {
@@ -63,7 +65,7 @@ public final class UpdateManager {
     }
 
     public static File getCacheUrl() {
-        return UpdateManager.cacheUrl;
+        return cacheUrl;
     }
 
     public static void update(UpdateCallback callback) {
@@ -75,17 +77,12 @@ public final class UpdateManager {
         void completion(State state, int progress);
     }
 
-    private static UpdateManager sharedInstance = new UpdateManager();
-    private UpdateManager() {
-        EventBus.getDefault().register(this);
-    }
-
     private static String wwwName = "www";
     private static String zipName = "www.zip";
     private static String filesName = "cenarius-files.json";
     private static String configName = "cenarius-config.json";
     private static String dbName = "cenarius-files.realm";
-    private static int retry = 5;
+    private static int retryConut = 5;
     private static int maxConcurrentOperationCount = 2;
 
     private static String resourceUrl = wwwName;
@@ -95,8 +92,8 @@ public final class UpdateManager {
     private static File cacheUrl = Cenarius.application.getDir(wwwName, Context.MODE_PRIVATE);
     private static File cacheConfigUrl = new File(cacheUrl, configName);
     private static String serverUrl;
-    private static String serverConfigUrl = serverUrl + File.separator + configName;
-    private static String serverFilesUrl = serverUrl + File.separator + filesName;
+    private static String serverConfigUrl;
+    private static String serverFilesUrl;
 
     private Boolean developMode = false;
     private UpdateCallback updateCallback;
@@ -108,13 +105,18 @@ public final class UpdateManager {
     private Realm mainRealm = Realm.getInstance(new RealmConfiguration.Builder().name(dbName).build());
 
     private Config resourceConfig;
-    private List<FileRealm> resourceFiles;
+    private List<com.m.cenarius.Update.File> resourceFiles;
     private Config cacheConfig;
     private RealmResults<FileRealm> cacheFiles;
     private Config serverConfig;
     private byte[] serverConfigData;
     private List<FileRealm> serverFiles;
     private List<FileRealm> downloadFiles;
+
+    private static UpdateManager sharedInstance = new UpdateManager();
+    private UpdateManager() {
+        EventBus.getDefault().register(this);
+    }
 
     private void updateAction(UpdateCallback callback) {
         updateCallback = callback;
@@ -135,14 +137,14 @@ public final class UpdateManager {
     /*加载本地的config*/
     private void loadLocalConfig() {
         try {
-            cacheConfig = JSON.parseObject(FileUtils.readFileToByteArray(cacheConfigUrl), Config.class);
+            cacheConfig = JSON.parseObject(FileUtils.readFileToString(cacheConfigUrl, "UTF-8"), Config.class);
         } catch (IOException e) {
             cacheConfig = null;
         }
 
         try {
             InputStream inputStream = Cenarius.application.getAssets().open(resourceConfigUrl);
-            resourceConfig = JSON.parseObject(IOUtils.toByteArray(inputStream), Config.class);
+            resourceConfig = JSON.parseObject(IOUtils.toString(inputStream, "UTF-8"), Config.class);
         } catch (IOException e) {
             Logger.e(e, "You must put " + configName + " file in www folder");
         }
@@ -152,8 +154,8 @@ public final class UpdateManager {
     private void loadLocalFiles() {
         cacheFiles = mainRealm.where(FileRealm.class).findAll();
         try {
-            InputStream inputStream = Cenarius.application.getAssets().open(resourceConfigUrl);
-            resourceFiles = JSON.parseObject(IOUtils.toByteArray(inputStream), FileRealm[].class);
+            InputStream inputStream = Cenarius.application.getAssets().open(resourceFilesUrl);
+            resourceFiles = JSON.parseArray(IOUtils.toString(inputStream, "UTF-8"), com.m.cenarius.Update.File.class);
         } catch (IOException e) {
             Logger.e(e, "You must put " + filesName + " file in www folder");
         }
@@ -228,7 +230,7 @@ public final class UpdateManager {
 
     private void downloadFiles(List<FileRealm> files) {
         final SmartExecutor smallExecutor = new SmartExecutor();
-        smallExecutor.setCoreSize(2);
+        smallExecutor.setCoreSize(maxConcurrentOperationCount);
         smallExecutor.setQueueSize(files.size());
         smallExecutor.setSchedulePolicy(SchedulePolicy.FirstInFistRun);
         smallExecutor.setOverloadPolicy(OverloadPolicy.ThrowExecption);
@@ -238,7 +240,7 @@ public final class UpdateManager {
             smallExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    if (!downloadFile(file, retry)) {
+                    if (!downloadFile(file, retryConut)) {
                         smallExecutor.cancelWaitingTask(null);
                     }
                 }
@@ -246,7 +248,7 @@ public final class UpdateManager {
         }
     }
 
-    private boolean downloadFile(FileRealm file, int retry) {
+    private boolean downloadFile(FileRealm file, int retryConut) {
         Call<ResponseBody> call = Network.requset(serverUrl + File.separator + file.getPath());
         try {
             Response<ResponseBody> response = call.execute();
@@ -258,12 +260,12 @@ public final class UpdateManager {
         } catch (IOException e) {
             Logger.e(e, null);
         }
-        return downloadFileRetry(file, retry);
+        return downloadFileRetry(file, retryConut);
     }
 
-    private boolean downloadFileRetry(FileRealm file, int retry) {
-        if (retry > 0) {
-            return downloadFile(file, retry - 1);
+    private boolean downloadFileRetry(FileRealm file, int retryConut) {
+        if (retryConut > 0) {
+            return downloadFile(file, retryConut - 1);
         } else {
             downloadFileError();
             return false;
@@ -404,7 +406,7 @@ public final class UpdateManager {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    private void onCompleteEvent(CompleteEvent event) {
+    protected void onCompleteEvent(CompleteEvent event) {
         updateCallback.completion(event.state, progress);
     }
 
@@ -432,7 +434,7 @@ public final class UpdateManager {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    private void onDownloadFileErrorEvent(DownloadFileErrorEvent event) {
+    protected void onDownloadFileErrorEvent(DownloadFileErrorEvent event) {
         if (!isDownloadFileError) {
             isDownloadFileError = true;
             complete(State.DOWNLOAD_FILES_ERROR);
@@ -440,7 +442,7 @@ public final class UpdateManager {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    private void onDownloadFileSuccessEvent(final DownloadFileSuccessEvent event) {
+    protected void onDownloadFileSuccessEvent(final DownloadFileSuccessEvent event) {
         if (isDownloadFileError) {
             return;
         }

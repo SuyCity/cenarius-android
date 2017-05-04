@@ -21,10 +21,11 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        update.getText();
     }
 
     @OnClick(R.id.update)
-    void update() {
+    public void update() {
         UpdateManager.setDevelopMode(false);
         UpdateManager.setServerUrl("http://172.20.70.80/www");
         UpdateManager.update(new UpdateManager.UpdateCallback() {
