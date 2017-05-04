@@ -24,4 +24,11 @@ public class File {
     public void setMd5(String md5) {
         this.md5 = md5;
     }
+
+    public FileRealm toRealm() {
+        FileRealm fileRealm = new FileRealm();
+        fileRealm.setPath(path);
+        fileRealm.setMd5(md5);
+        return fileRealm;
+    }
 }

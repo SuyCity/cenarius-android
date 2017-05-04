@@ -110,8 +110,8 @@ public final class UpdateManager {
     private RealmResults<FileRealm> cacheFiles;
     private Config serverConfig;
     private byte[] serverConfigData;
-    private List<FileRealm> serverFiles;
-    private List<FileRealm> downloadFiles;
+    private List<com.m.cenarius.Update.File> serverFiles;
+    private List<com.m.cenarius.Update.File> downloadFiles;
 
     private static UpdateManager sharedInstance = new UpdateManager();
     private UpdateManager() {
@@ -204,7 +204,7 @@ public final class UpdateManager {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     try {
-                        serverFiles = JSON.parseObject(response.body().bytes(), FileRealm[].class);
+                        serverFiles = JSON.parseObject(response.body().bytes(), com.m.cenarius.Update.File.class);
                         downloadFiles = getDownloadFiles(serverFiles);
                         if (downloadFiles.size() > 0) {
                             downloadFiles(downloadFiles);
@@ -228,7 +228,7 @@ public final class UpdateManager {
         });
     }
 
-    private void downloadFiles(List<FileRealm> files) {
+    private void downloadFiles(List<com.m.cenarius.Update.File> files) {
         final SmartExecutor smallExecutor = new SmartExecutor();
         smallExecutor.setCoreSize(maxConcurrentOperationCount);
         smallExecutor.setQueueSize(files.size());
@@ -236,7 +236,7 @@ public final class UpdateManager {
         smallExecutor.setOverloadPolicy(OverloadPolicy.ThrowExecption);
         downloadFilesCount = 0;
         isDownloadFileError = false;
-        for (final FileRealm file : files) {
+        for (final com.m.cenarius.Update.File file : files) {
             smallExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -248,7 +248,7 @@ public final class UpdateManager {
         }
     }
 
-    private boolean downloadFile(FileRealm file, int retryConut) {
+    private boolean downloadFile(com.m.cenarius.Update.File file, int retryConut) {
         Call<ResponseBody> call = Network.requset(serverUrl + File.separator + file.getPath());
         try {
             Response<ResponseBody> response = call.execute();
@@ -263,7 +263,7 @@ public final class UpdateManager {
         return downloadFileRetry(file, retryConut);
     }
 
-    private boolean downloadFileRetry(FileRealm file, int retryConut) {
+    private boolean downloadFileRetry(com.m.cenarius.Update.File file, int retryConut) {
         if (retryConut > 0) {
             return downloadFile(file, retryConut - 1);
         } else {
@@ -272,7 +272,7 @@ public final class UpdateManager {
         }
     }
 
-    private void downloadFileSuccess(FileRealm file) {
+    private void downloadFileSuccess(com.m.cenarius.Update.File file) {
         EventBus.getDefault().post(new DownloadFileSuccessEvent(file));
     }
 
@@ -288,19 +288,21 @@ public final class UpdateManager {
         }
     }
 
-    private void saveFiles(final List<FileRealm> files) {
+    private void saveFiles(final List<com.m.cenarius.Update.File> files) {
         mainRealm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 realm.deleteAll();
-                realm.insert(files);
+                for (com.m.cenarius.Update.File file: files) {
+                    realm.insert(file.toRealm());
+                }
             }
         });
     }
 
-    private List<FileRealm> getDownloadFiles(List<FileRealm> serverFiles) {
-        List<FileRealm> downloadFiles = new ArrayList<>();
-        for (FileRealm file: serverFiles) {
+    private List<com.m.cenarius.Update.File> getDownloadFiles(List<com.m.cenarius.Update.File> serverFiles) {
+        List<com.m.cenarius.Update.File> downloadFiles = new ArrayList<>();
+        for (com.m.cenarius.Update.File file: serverFiles) {
             if (shouldDownload(file)) {
                 downloadFiles.add(file);
             }
@@ -308,7 +310,7 @@ public final class UpdateManager {
         return downloadFiles;
     }
 
-    private boolean shouldDownload(FileRealm serverFile) {
+    private boolean shouldDownload(com.m.cenarius.Update.File serverFile) {
         for (FileRealm cacheFile: cacheFiles) {
             if (cacheFile.getPath().equals(serverFile.getPath()) && cacheFile.getMd5().equals(serverFile.getMd5())) {
                 return false;
@@ -398,7 +400,7 @@ public final class UpdateManager {
     }
 
     private void unzipSuccess() {
-
+        EventBus.getDefault().post(new UnzipSuccessEvent());
     }
 
     private void complete(State state) {
@@ -442,9 +444,9 @@ public final class UpdateManager {
 
     private static class DownloadFileSuccessEvent {
 
-        public FileRealm file;
+        public com.m.cenarius.Update.File file;
 
-        private DownloadFileSuccessEvent(FileRealm file) {
+        private DownloadFileSuccessEvent(com.m.cenarius.Update.File file) {
             this.file = file;
         }
     }
@@ -469,7 +471,7 @@ public final class UpdateManager {
         mainRealm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                realm.insertOrUpdate(event.file);
+                realm.insertOrUpdate(event.file.toRealm());
             }
         });
         downloadFilesCount += 1;
