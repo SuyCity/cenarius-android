@@ -60,9 +60,9 @@ public class Utils {
      * @return 当前应用的版本号
      */
     public static String getAppVersionName() {
-        PackageManager manager = Cenarius.application.getPackageManager();
+        PackageManager manager = Cenarius.context.getPackageManager();
         try {
-            PackageInfo info = manager.getPackageInfo(Cenarius.application.getPackageName(), 0);
+            PackageInfo info = manager.getPackageInfo(Cenarius.context.getPackageName(), 0);
             String version = info.versionName;
             return version;
         } catch (PackageManager.NameNotFoundException e) {

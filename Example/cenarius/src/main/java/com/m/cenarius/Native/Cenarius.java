@@ -1,6 +1,7 @@
 package com.m.cenarius.Native;
 
 import android.app.Application;
+import android.content.Context;
 
 import io.realm.Realm;
 
@@ -10,10 +11,10 @@ import io.realm.Realm;
 
 public final class Cenarius {
 
-    public static Application application;
+    public static Context context;
 
     public static void initialize(Application application) {
-        Cenarius.application = application;
-        Realm.init(application);
+        context = application.getApplicationContext();
+        Realm.init(context);
     }
 }
