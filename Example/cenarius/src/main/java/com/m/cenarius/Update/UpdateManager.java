@@ -89,7 +89,7 @@ public final class UpdateManager {
     private static String resourceConfigUrl = resourceUrl + File.separator + configName;
     private static String resourceFilesUrl = resourceUrl + File.separator + filesName;
     private static String resourceZipUrl = resourceUrl + File.separator + zipName;
-    private static File cacheUrl = Cenarius.application.getDir(wwwName, Context.MODE_PRIVATE);
+    private static File cacheUrl = Cenarius.context.getDir(wwwName, Context.MODE_PRIVATE);
     private static File cacheConfigUrl = new File(cacheUrl, configName);
     private static String serverUrl;
     private static String serverConfigUrl;
@@ -143,7 +143,7 @@ public final class UpdateManager {
         }
 
         try {
-            InputStream inputStream = Cenarius.application.getAssets().open(resourceConfigUrl);
+            InputStream inputStream = Cenarius.context.getAssets().open(resourceConfigUrl);
             resourceConfig = JSON.parseObject(IOUtils.toString(inputStream, "UTF-8"), Config.class);
         } catch (IOException e) {
             Logger.e(e, "You must put " + configName + " file in www folder");
@@ -154,7 +154,7 @@ public final class UpdateManager {
     private void loadLocalFiles() {
         cacheFiles = mainRealm.where(FileRealm.class).findAll();
         try {
-            InputStream inputStream = Cenarius.application.getAssets().open(resourceFilesUrl);
+            InputStream inputStream = Cenarius.context.getAssets().open(resourceFilesUrl);
             resourceFiles = JSON.parseArray(IOUtils.toString(inputStream, "UTF-8"), com.m.cenarius.Update.File.class);
         } catch (IOException e) {
             Logger.e(e, "You must put " + filesName + " file in www folder");
@@ -340,7 +340,7 @@ public final class UpdateManager {
             public void run() {
                 try {
                     FileUtils.deleteDirectory(cacheUrl);
-                    InputStream inputStream = Cenarius.application.getAssets().open(resourceZipUrl);
+                    InputStream inputStream = Cenarius.context.getAssets().open(resourceZipUrl);
                     ZipUtil.iterate(inputStream, new ZipEntryCallback() {
                         @Override
                         public void process(InputStream in, ZipEntry zipEntry) throws IOException {
@@ -414,7 +414,7 @@ public final class UpdateManager {
     @Subscribe(threadMode = ThreadMode.MAIN)
     protected void onUnzipSuccessEvent(UnzipSuccessEvent event) {
         try {
-            InputStream inputStream = Cenarius.application.getAssets().open(resourceConfigUrl);
+            InputStream inputStream = Cenarius.context.getAssets().open(resourceConfigUrl);
             FileUtils.copyInputStreamToFile(inputStream, cacheConfigUrl);
             saveFiles(resourceFiles);
             if (shouldDownloadWww()) {
