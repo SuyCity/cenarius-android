@@ -196,8 +196,4 @@ public class Utils {
         return params;
     }
 
-    public static Activity topViewController() {
-        // TODO
-        return null;
-    }
 }

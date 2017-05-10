@@ -3,7 +3,11 @@ package com.m.example;
 import android.app.Application;
 
 import com.m.cenarius.Native.Cenarius;
+import com.m.cenarius.Route.Route;
 import com.m.cenarius.Update.UpdateManager;
+import com.m.cenarius.Web.Interceptor.Interceptor;
+import com.m.cenarius.Web.Interceptor.RouteInterceptor;
+import com.m.cenarius.Web.Interceptor.ToastInterceptor;
 import com.m.cenarius.Weex.ImageAdapter;
 import com.taobao.weex.InitConfig;
 import com.taobao.weex.WXEnvironment;
@@ -25,8 +29,8 @@ public class MainApplication extends Application {
         super.onCreate();
 
         initCenarius();
-
-
+        registerRoute();
+        registerInterceptor();
         initWeex();
     }
 
@@ -37,6 +41,15 @@ public class MainApplication extends Application {
     void initWeex() {
         InitConfig config = new InitConfig.Builder().setImgAdapter(new ImageAdapter()).build();
         WXSDKEngine.initialize(this, config);
+    }
+
+    void registerRoute() {
+        Route.register("/user", UserActivity.class);
+    }
+
+    void registerInterceptor() {
+        Interceptor.register(new RouteInterceptor());
+        Interceptor.register(new ToastInterceptor());
     }
 
 }
