@@ -22,6 +22,9 @@ android {
 }
 
 dependencies {
+    compile 'com.github.GrenderG:Toasty:1.2.3'
+    // The usual Toast, but with steroids
+    // https://github.com/GrenderG/Toasty
     compile 'com.orhanobut:logger:1.15'
     // Simple, pretty and powerful logger for android
     // https://github.com/orhanobut/logger
@@ -54,9 +57,6 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     // Bind Android views and callbacks to fields and methods.
     // https://github.com/JakeWharton/butterknife
-    compile 'com.github.GrenderG:Toasty:1.2.3'
-    // The usual Toast, but with steroids
-    // https://github.com/GrenderG/Toasty
 
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha9'
     compile fileTree(dir: 'libs', include: ['*.jar'])
