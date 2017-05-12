@@ -5,7 +5,7 @@ import android.content.Intent;
 
 import com.alibaba.fastjson.JSONObject;
 import com.m.cenarius.Native.Cenarius;
-import com.m.cenarius.Utils.Utils;
+import com.m.cenarius.Utils.UrlUtil;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -25,10 +25,10 @@ public class Route {
 
     public static void open(String url, Context from) {
 
-        Class toControllerType = sharedInstance.routes.get(Utils.getPath(url));
+        Class toControllerType = sharedInstance.routes.get(UrlUtil.getPath(url));
         if (toControllerType != null) {
-            Map<String, String > queryParameters = Utils.parametersFromUrl(url);
-            JSONObject params = Utils.getParams(url);
+            Map<String, String > queryParameters = UrlUtil.parametersFromUrl(url);
+            JSONObject params = UrlUtil.getParams(url);
             Context fromViewController = from != null ? from : Cenarius.context;
             Intent intent = new Intent(fromViewController, toControllerType);
             intent.putExtra("params", params);

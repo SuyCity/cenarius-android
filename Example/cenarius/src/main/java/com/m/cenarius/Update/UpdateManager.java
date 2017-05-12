@@ -8,7 +8,7 @@ import com.litesuits.go.SchedulePolicy;
 import com.litesuits.go.SmartExecutor;
 import com.m.cenarius.Native.Cenarius;
 import com.m.cenarius.Network.Network;
-import com.m.cenarius.Utils.Utils;
+import com.m.cenarius.Utils.VersionUtil;
 import com.orhanobut.logger.Logger;
 
 import org.apache.commons.io.FileUtils;
@@ -320,7 +320,7 @@ public final class UpdateManager {
     }
 
     private boolean isWwwFolderNeedsToBeInstalled() {
-        if (cacheConfig == null || Utils.compareVersion(cacheConfig.release, resourceConfig.release) < 0) {
+        if (cacheConfig == null || VersionUtil.compareVersion(cacheConfig.release, resourceConfig.release) < 0) {
             //没有缓存或者缓存比预置低
             return true;
         }
@@ -382,17 +382,17 @@ public final class UpdateManager {
         if (hasMinVersion(serverConfig)) {
             // 满足最小版本要求
             if (isWwwFolderNeedsToBeInstalled()) {
-                return Utils.compareVersion(serverConfig.release, resourceConfig.release) > 0;
+                return VersionUtil.compareVersion(serverConfig.release, resourceConfig.release) > 0;
             } else {
-                return Utils.compareVersion(serverConfig.release, cacheConfig.release) > 0;
+                return VersionUtil.compareVersion(serverConfig.release, cacheConfig.release) > 0;
             }
         }
         return false;
     }
 
     private boolean hasMinVersion(Config serverConfig) {
-        String versionName = Utils.getAppVersionName();
-        if (versionName != null && serverConfig.android_min_version != null && Utils.compareVersion(versionName, serverConfig.android_min_version) >= 0) {
+        String versionName = VersionUtil.getAppVersionName();
+        if (versionName != null && serverConfig.android_min_version != null && VersionUtil.compareVersion(versionName, serverConfig.android_min_version) >= 0) {
             return true;
         }
         return false;
