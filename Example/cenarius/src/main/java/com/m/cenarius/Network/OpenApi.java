@@ -1,10 +1,18 @@
 package com.m.cenarius.Network;
 
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.m.cenarius.Native.Cenarius;
+import com.m.cenarius.Utils.UrlUtil;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
+
+import java.util.Date;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by m on 2017/5/12.
@@ -37,7 +45,75 @@ public class OpenApi {
     }
 
     public static String sign(String url, Map<String, String> parameters, Map<String, String> headers) {
-return null;
+        boolean isOpenApi = false;
+        boolean isJson= false;
+        if (headers != null) {
+            for (String key: headers.keySet()) {
+                if (TextUtils.equals(key, "X-Requested-With") && TextUtils.equals(headers.get(key), "OpenAPIRequest")) {
+                    isOpenApi = true;
+                }
+                if (TextUtils.equals(key, "Content-Type") && headers.get(key).contains("application/json")) {
+                    isJson = true;
+                }
+            }
+        }
+
+        if (!isOpenApi) {
+            return url;
+        }
+
+        String querySting = UrlUtil.getQuery(url);
+        String queryCombined = querySting;
+        String bodySting;
+        if (!parameters.isEmpty()) {
+            if (isJson) {
+                bodySting = "openApiBodyString=" + UrlUtil.encodeURIComponent(JSON.toJSONString(parameters));
+            } else {
+                bodySting = UrlUtil.parametersToQuery(parameters);
+            }
+            if (queryCombined != null) {
+                queryCombined += "&" + bodySting;
+            } else {
+                queryCombined = bodySting;
+            }
+        }
+
+        Map<String, String> parametersSigned = new TreeMap<>();
+        if (queryCombined != null) {
+            parametersSigned = UrlUtil.queryToParameters(queryCombined);
+        }
+        String token = sharedInstance.accessToken != null ? sharedInstance.accessToken : getAnonymousToken();
+        String appKey = sharedInstance.appKey;
+        String appSecret = sharedInstance.appSecret;
+        String timestamp = Long.toString((new Date()).getTime());
+
+        String urlSigned = url;
+        if (!urlSigned.contains("?")) {
+            urlSigned += "?";
+        } else if (querySting != null) {
+            urlSigned += "&";
+        }
+        urlSigned += "access_token=" + UrlUtil.encodeURIComponent(token);
+        urlSigned += "&timestamp=" + timestamp;
+        urlSigned += "&app_key=" + UrlUtil.encodeURIComponent(appKey);
+
+        parametersSigned.put("access_token", token);
+        parametersSigned.put("timestamp", timestamp);
+        parametersSigned.put("app_key", appKey);
+        String sign = md5Signature(parametersSigned, appSecret);
+        urlSigned += "&sign=" + UrlUtil.encodeURIComponent(sign);
+        return urlSigned;
+    }
+
+    private static String md5Signature(Map<String, String> parameters, String secret) {
+        Map<String, String> treeMap = new TreeMap<>(parameters);
+        String result = secret;
+        for (String key: treeMap.keySet()) {
+            result += key + treeMap.get(key);
+        }
+        result += secret;
+        result = DigestUtils.md5Hex(result);
+        return result;
     }
 
     private static SharedPreferences getSharedPreferences() {
@@ -46,5 +122,46 @@ return null;
 
     private static SharedPreferences.Editor getEditor() {
         return getSharedPreferences().edit();
+    }
+
+    /**
+     * 获取匿名token
+     */
+    private static String getAnonymousToken() {
+        String token = createRandom(false, 8) + "##ANONYMOUS";
+        token = Base64.encodeBase64String(token.getBytes());
+        return token;
+    }
+
+    /**
+     * 创建指定数量的随机字符串
+     *
+     * @param numberFlag 是否是数字
+     * @param length
+     * @return
+     */
+    private static String createRandom(boolean numberFlag, int length) {
+        String retStr = "";
+        String strTable = numberFlag ? "1234567890" : "1234567890abcdefghijkmnpqrstuvwxyz";
+        int len = strTable.length();
+        boolean bDone = true;
+        do {
+            retStr = "";
+            int count = 0;
+            for (int i = 0; i < length; i++) {
+                double dblR = Math.random() * len;
+                int intR = (int) Math.floor(dblR);
+                char c = strTable.charAt(intR);
+                if (('0' <= c) && (c <= '9')) {
+                    count++;
+                }
+                retStr += strTable.charAt(intR);
+            }
+            if (count >= 2) {
+                bDone = false;
+            }
+        } while (bDone);
+
+        return retStr;
     }
 }

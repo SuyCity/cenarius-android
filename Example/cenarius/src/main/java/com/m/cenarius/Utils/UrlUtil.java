@@ -1,6 +1,7 @@
 package com.m.cenarius.Utils;
 
 import android.net.Uri;
+import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -39,12 +40,12 @@ public class UrlUtil {
         }
     }
 
-    public static Map<String, String> parametersFromUrl(String url) {
-        String query = queryFromUrl(url);
-        return parametersFromQuery(query);
+    public static Map<String, String> getParameters(String url) {
+        String query = getQuery(url);
+        return queryToParameters(query);
     }
 
-    public static Map<String, String> parametersFromQuery(String query) {
+    public static Map<String, String> queryToParameters(String query) {
         Map<String, String> results = new TreeMap<>();
         if (query == null) {
             return results;
@@ -75,7 +76,15 @@ public class UrlUtil {
         return results;
     }
 
-    public static String queryFromUrl(String url) {
+    public static String parametersToQuery(Map<String, String> parameters) {
+        List<String> pairs = new ArrayList<>();
+        for (String key: parameters.keySet()) {
+            pairs.add(UrlUtil.encodeURIComponent(key) + "=" + UrlUtil.encodeURIComponent(parameters.get(key)));
+        }
+        return TextUtils.join("&", pairs);
+    }
+
+    public static String getQuery(String url) {
         if (url == null) {
             return null;
         }
@@ -86,11 +95,12 @@ public class UrlUtil {
         return null;
     }
 
+    /* 获取parameters里面的params */
     public static JSONObject getParams(String url) {
         if (url == null) {
             return null;
         }
-        Map<String, String> queryParameters = parametersFromUrl(url);
+        Map<String, String> queryParameters = getParameters(url);
         JSONObject params = null;
         String paramsString = queryParameters.get("params");
         if (paramsString != null) {

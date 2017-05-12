@@ -2,13 +2,11 @@ package com.m.example;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.widget.Button;
 
 import com.m.cenarius.Route.Route;
 import com.m.cenarius.Update.UpdateManager;
 import com.orhanobut.logger.Logger;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -18,6 +16,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         ButterKnife.bind(this);
     }
 

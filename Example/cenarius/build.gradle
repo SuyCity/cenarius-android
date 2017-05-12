@@ -30,6 +30,9 @@ dependencies {
     compile 'commons-io:commons-io:2.5'
     // Commons IO is a library of utilities to assist with developing IO functionality
     // https://github.com/apache/commons-io
+    compile 'commons-codec:commons-codec:1.10'
+    // The Apache Commons Codec package contains simple encoder and decoders for various formats such as Base64 and Hexadecimal.
+    // https://github.com/apache/commons-codec
     compile 'org.greenrobot:eventbus:3.0.0'
     // Android optimized event bus that simplifies communication between Activities, Fragments, Threads, Services, etc.
     // https://github.com/greenrobot/EventBus

@@ -1,6 +1,7 @@
 package com.m.cenarius.Update;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.litesuits.go.OverloadPolicy;
@@ -312,7 +313,7 @@ public final class UpdateManager {
 
     private boolean shouldDownload(com.m.cenarius.Update.File serverFile) {
         for (FileRealm cacheFile: cacheFiles) {
-            if (cacheFile.getPath().equals(serverFile.getPath()) && cacheFile.getMd5().equals(serverFile.getMd5())) {
+            if (TextUtils.equals(cacheFile.getPath(), serverFile.getPath()) && TextUtils.equals(cacheFile.getMd5(), serverFile.getMd5())) {
                 return false;
             }
         }
