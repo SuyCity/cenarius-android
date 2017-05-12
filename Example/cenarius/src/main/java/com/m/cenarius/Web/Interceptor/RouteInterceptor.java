@@ -14,7 +14,7 @@ public class RouteInterceptor implements InterceptorAdapter {
 
     @Override
     public boolean perform(String url, Context controller) {
-        if (TextUtils.equals(UrlUtil.getScheme(url), "cenarius") && TextUtils.equals(UrlUtil.getHost(url), "route")) {
+        if (TextUtils.equals(UrlUtil.getScheme(url), Interceptor.scheme) && TextUtils.equals(UrlUtil.getHost(url), "route")) {
             Route.open(url, controller);
             return true;
         }

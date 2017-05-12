@@ -15,7 +15,7 @@ public class ToastInterceptor implements InterceptorAdapter {
 
     @Override
     public boolean perform(String url, Context controller) {
-        if (TextUtils.equals(UrlUtil.getScheme(url), "cenarius") && TextUtils.equals(UrlUtil.getHost(url), "toast")) {
+        if (TextUtils.equals(UrlUtil.getScheme(url), Interceptor.scheme) && TextUtils.equals(UrlUtil.getHost(url), "toast")) {
             Toasty.normal(controller, UrlUtil.getParams(url).getString("text")).show();
             return true;
         }

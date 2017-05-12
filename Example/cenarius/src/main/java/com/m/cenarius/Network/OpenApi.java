@@ -20,8 +20,13 @@ import java.util.TreeMap;
 
 public class OpenApi {
 
-    private static String fileName = "TokenFile";
-    private static String accessTokenKey = "CenariusAccessToken";
+    public static final String xRequestKey = "X-Requested-With";
+    public static final String xRequestValue = "OpenAPIRequest";
+    public static final String contentTypeKey = "Content-Type";
+    public static final String contentTypeValue = "application/json";
+
+    private static final String fileName = "TokenFile";
+    private static final String accessTokenKey = "CenariusAccessToken";
     private static OpenApi sharedInstance = new OpenApi();
     private String accessToken = getSharedPreferences().getString(accessTokenKey, null);
     private String appKey;
@@ -49,10 +54,10 @@ public class OpenApi {
         boolean isJson= false;
         if (headers != null) {
             for (String key: headers.keySet()) {
-                if (TextUtils.equals(key, "X-Requested-With") && TextUtils.equals(headers.get(key), "OpenAPIRequest")) {
+                if (TextUtils.equals(key, xRequestKey) && TextUtils.equals(headers.get(key), xRequestValue)) {
                     isOpenApi = true;
                 }
-                if (TextUtils.equals(key, "Content-Type") && headers.get(key).contains("application/json")) {
+                if (TextUtils.equals(key, contentTypeKey) && headers.get(key).contains(contentTypeValue)) {
                     isJson = true;
                 }
             }

@@ -78,13 +78,13 @@ public final class UpdateManager {
         void completion(State state, int progress);
     }
 
-    private static String wwwName = "www";
-    private static String zipName = "www.zip";
-    private static String filesName = "cenarius-files.json";
-    private static String configName = "cenarius-config.json";
-    private static String dbName = "cenarius-files.realm";
-    private static int retryConut = 5;
-    private static int maxConcurrentOperationCount = 2;
+    private static final String wwwName = "www";
+    private static final String zipName = "www.zip";
+    private static final String filesName = "cenarius-files.json";
+    private static final String configName = "cenarius-config.json";
+    private static final String dbName = "cenarius-files.realm";
+    private static final int retryConut = 5;
+    private static final int maxConcurrentOperationCount = 2;
 
     private static String resourceUrl = wwwName;
     private static String resourceConfigUrl = resourceUrl + File.separator + configName;

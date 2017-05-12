@@ -11,6 +11,8 @@ import java.util.List;
 
 public class Interceptor {
 
+    public static final String scheme = "cenarius";
+
     private List<InterceptorAdapter> interceptors = new ArrayList<>();
     private static Interceptor sharedInstance = new Interceptor();
 

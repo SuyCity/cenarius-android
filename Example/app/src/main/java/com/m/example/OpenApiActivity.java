@@ -21,7 +21,7 @@ public class OpenApiActivity extends Activity {
     TextView urlTextView;
     @BindView(R.id.jsonCheckBox)
     CheckBox jsonCheckBox;
-    @BindView(R.id.signTextView);
+    @BindView(R.id.signTextView)
     TextView signTextView;
 
     @Override

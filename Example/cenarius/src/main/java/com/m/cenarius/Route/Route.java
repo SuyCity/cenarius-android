@@ -27,7 +27,7 @@ public class Route {
 
         Class toControllerType = sharedInstance.routes.get(UrlUtil.getPath(url));
         if (toControllerType != null) {
-            Map<String, String > queryParameters = UrlUtil.parametersFromUrl(url);
+            Map<String, String > queryParameters = UrlUtil.getParameters(url);
             JSONObject params = UrlUtil.getParams(url);
             Context fromViewController = from != null ? from : Cenarius.context;
             Intent intent = new Intent(fromViewController, toControllerType);
