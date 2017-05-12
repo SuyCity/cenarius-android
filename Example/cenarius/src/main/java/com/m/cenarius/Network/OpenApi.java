@@ -2,12 +2,12 @@ package com.m.cenarius.Network;
 
 import android.content.SharedPreferences;
 import android.text.TextUtils;
+import android.util.Base64;
 
 import com.alibaba.fastjson.JSON;
 import com.m.cenarius.Native.Cenarius;
 import com.m.cenarius.Utils.UrlUtil;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.util.Date;
@@ -134,7 +134,7 @@ public class OpenApi {
      */
     private static String getAnonymousToken() {
         String token = createRandom(false, 8) + "##ANONYMOUS";
-        token = Base64.encodeBase64String(token.getBytes());
+        token = Base64.encodeToString(token.getBytes(), Base64.NO_WRAP);
         return token;
     }
 
