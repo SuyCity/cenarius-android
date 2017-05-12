@@ -24,7 +24,8 @@ public class Route {
     }
 
     public static void open(String url, Context from) {
-        Class toControllerType = sharedInstance.routes.get(url);
+
+        Class toControllerType = sharedInstance.routes.get(Utils.getPath(url));
         if (toControllerType != null) {
             Map<String, String > queryParameters = Utils.parametersFromUrl(url);
             JSONObject params = Utils.getParams(url);

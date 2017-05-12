@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.widget.Button;
 
+import com.m.cenarius.Route.Route;
 import com.m.cenarius.Update.UpdateManager;
 import com.orhanobut.logger.Logger;
 
@@ -13,15 +14,11 @@ import butterknife.OnClick;
 
 public class MainActivity extends Activity {
 
-    @BindView(R.id.update)
-    Button update;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        update.getText();
     }
 
     @OnClick(R.id.update)
@@ -36,5 +33,10 @@ public class MainActivity extends Activity {
 
             }
         });
+    }
+
+    @OnClick(R.id.openApi)
+    public void sign() {
+        Route.open("cenarius://route/openapi", this);
     }
 }

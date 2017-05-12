@@ -45,6 +45,7 @@ public class MainApplication extends Application {
 
     void registerRoute() {
         Route.register("/user", UserActivity.class);
+        Route.register("/openapi", OpenApiActivity.class);
     }
 
     void registerInterceptor() {

@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 
 import com.alibaba.fastjson.JSON;
@@ -194,6 +195,21 @@ public class Utils {
             params = JSON.parseObject(paramsString);
         }
         return params;
+    }
+
+    public static String getPath(String url) {
+        Uri uri = Uri.parse(url);
+        return uri.getPath();
+    }
+
+    public static String getScheme(String url) {
+        Uri uri = Uri.parse(url);
+        return uri.getScheme();
+    }
+
+    public static String getHost(String url) {
+        Uri uri = Uri.parse(url);
+        return uri.getHost();
     }
 
 }
