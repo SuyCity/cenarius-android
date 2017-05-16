@@ -4,6 +4,8 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
+import com.litesuits.common.io.FileUtils;
+import com.litesuits.common.io.IOUtils;
 import com.litesuits.go.OverloadPolicy;
 import com.litesuits.go.SchedulePolicy;
 import com.litesuits.go.SmartExecutor;
@@ -12,8 +14,6 @@ import com.m.cenarius.Network.Network;
 import com.m.cenarius.Utils.VersionUtil;
 import com.orhanobut.logger.Logger;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
