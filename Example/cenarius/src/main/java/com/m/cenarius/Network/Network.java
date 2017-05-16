@@ -70,11 +70,14 @@ public class Network {
         if (h == null) {
             h = new TreeMap<>();
         }
+
+        String u = OpenApi.sign(url, parameters, headers);
+
         if (method == HTTPMethod.POST) {
-            return service.post(url, p, h);
+            return service.post(u, p, h);
         }
         else {
-            return service.get(url, p, h);
+            return service.get(u, p, h);
         }
     }
 }
