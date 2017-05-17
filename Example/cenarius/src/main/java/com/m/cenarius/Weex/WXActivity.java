@@ -2,7 +2,6 @@ package com.m.cenarius.Weex;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 
@@ -15,7 +14,6 @@ import com.m.cenarius.Update.UpdateManager;
 import com.orhanobut.logger.Logger;
 import com.taobao.weex.IWXRenderListener;
 import com.taobao.weex.WXSDKInstance;
-import com.taobao.weex.WXSDKManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,9 +67,9 @@ public class WXActivity extends Activity implements IWXRenderListener {
 
     }
 
-    public void onBackPressed(){
-        Log.e("USER ACTION", "BACK");
-        WXSDKManager.getInstance().fireEvent(mWXSDKInstance.getInstanceId(),"_root","androidback");
+    public void onBackPressed() {
+        mWXSDKInstance.fireEvent("_root","androidback");
+        super.onBackPressed();
     }
 
     @Override
