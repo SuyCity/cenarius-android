@@ -6,12 +6,19 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 
+import com.alibaba.fastjson.JSONObject;
+import com.litesuits.common.io.FileUtils;
 import com.m.cenarius.R;
 
+import com.m.cenarius.Route.Route;
+import com.m.cenarius.Update.UpdateManager;
+import com.orhanobut.logger.Logger;
 import com.taobao.weex.IWXRenderListener;
 import com.taobao.weex.WXSDKInstance;
 import com.taobao.weex.WXSDKManager;
-import com.taobao.weex.utils.WXFileUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 public class WXActivity extends Activity implements IWXRenderListener {
 
@@ -24,11 +31,22 @@ public class WXActivity extends Activity implements IWXRenderListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_wx);
 
-
         mWXSDKInstance = new WXSDKInstance(this);
         mWXSDKInstance.registerRenderListener(this);
 
-        mWXSDKInstance.render(WXFileUtils.loadAsset("index.js", this));
+        JSONObject params = Route.getParamsJsonObject(this);
+        if (params != null) {
+            String url = params.getString("url");
+            if (url != null) {
+                File file = UpdateManager.getCacheUrl(url);
+                try {
+                    String template = FileUtils.readFileToString(file);
+                    mWXSDKInstance.render(template);
+                } catch (IOException e) {
+                    Logger.e(e, null);
+                }
+            }
+        }
     }
 
     @Override

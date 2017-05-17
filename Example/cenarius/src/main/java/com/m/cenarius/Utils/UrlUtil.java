@@ -96,17 +96,16 @@ public class UrlUtil {
     }
 
     /* 获取parameters里面的params */
-    public static JSONObject getParams(String url) {
+    public static JSONObject getParamsJsonObject(String url) {
+        return JSON.parseObject(getParamsJsonString(url));
+    }
+
+    public static String getParamsJsonString(String url) {
         if (url == null) {
             return null;
         }
         Map<String, String> queryParameters = getParameters(url);
-        JSONObject params = null;
-        String paramsString = queryParameters.get("params");
-        if (paramsString != null) {
-            params = JSON.parseObject(paramsString);
-        }
-        return params;
+        return queryParameters.get("params");
     }
 
     public static String getPath(String url) {

@@ -9,6 +9,7 @@ import com.m.cenarius.Web.Interceptor.Interceptor;
 import com.m.cenarius.Web.Interceptor.RouteInterceptor;
 import com.m.cenarius.Web.Interceptor.ToastInterceptor;
 import com.m.cenarius.Weex.ImageAdapter;
+import com.m.cenarius.Weex.WXActivity;
 import com.taobao.weex.InitConfig;
 import com.taobao.weex.WXEnvironment;
 import com.taobao.weex.WXSDKEngine;
@@ -45,7 +46,8 @@ public class MainApplication extends Application {
 
     void registerRoute() {
         Route.register("/user", UserActivity.class);
-        Route.register("/openapi", OpenApiActivity.class);
+        Route.register("/sign", OpenApiActivity.class);
+        Route.register("/weex", WXActivity.class);
     }
 
     void registerInterceptor() {

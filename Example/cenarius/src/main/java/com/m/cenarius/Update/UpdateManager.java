@@ -68,6 +68,9 @@ public final class UpdateManager {
     public static File getCacheUrl() {
         return cacheUrl;
     }
+    public static File getCacheUrl(String url) {
+        return new File(getCacheUrl(), url);
+    }
 
     public static void update(UpdateCallback callback) {
         sharedInstance.updateAction(callback);
