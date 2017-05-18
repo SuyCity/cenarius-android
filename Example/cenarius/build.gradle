@@ -57,6 +57,9 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
     // Bind Android views and callbacks to fields and methods.
     // https://github.com/JakeWharton/butterknife
+    compile 'com.kaopiz:kprogresshud:1.0.5'
+    // An implement of ProgressHUD for Android, similar to MBProgressHUD
+    // https://github.com/Kaopiz/KProgressHUD
 
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
