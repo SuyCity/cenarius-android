@@ -46,10 +46,18 @@ public class MainActivity extends Activity {
 
     @OnClick(R.id.weex)
     public void weex() {
-        String url = "weex/index.js";
+        String file = "weex/index.js";
         Map<String, String> params = new TreeMap<>();
-        params.put("url", url);
+        params.put("file", file);
         Route.open("cenarius://route/weex", this, JSON.toJSONString(params));
+    }
+
+    @OnClick(R.id.webView)
+    public void webView() {
+        String file = "vux/index.html";
+        Map<String, String> params = new TreeMap<>();
+        params.put("file", file);
+        Route.open("cenarius://route/webView", this, JSON.toJSONString(params));
     }
 
 }

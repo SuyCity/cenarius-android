@@ -68,8 +68,8 @@ public final class UpdateManager {
     public static File getCacheUrl() {
         return cacheUrl;
     }
-    public static File getCacheUrl(String url) {
-        return new File(getCacheUrl(), url);
+    public static File getCacheUrl(String file) {
+        return new File(getCacheUrl(), file);
     }
 
     public static void update(UpdateCallback callback) {

@@ -18,7 +18,7 @@ import com.taobao.weex.WXSDKInstance;
 import java.io.File;
 import java.io.IOException;
 
-public class WXActivity extends Activity implements IWXRenderListener {
+public class WeexActivity extends Activity implements IWXRenderListener {
 
     WXSDKInstance mWXSDKInstance;
 
@@ -34,11 +34,11 @@ public class WXActivity extends Activity implements IWXRenderListener {
 
         JSONObject params = Route.getParamsJsonObject(this);
         if (params != null) {
-            String url = params.getString("url");
-            if (url != null) {
-                File file = UpdateManager.getCacheUrl(url);
+            String file = params.getString("file");
+            if (file != null) {
                 try {
-                    String template = FileUtils.readFileToString(file);
+                    File url = UpdateManager.getCacheUrl(file);
+                    String template = FileUtils.readFileToString(url);
                     mWXSDKInstance.render(template);
                 } catch (IOException e) {
                     Logger.e(e, null);

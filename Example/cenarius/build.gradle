@@ -4,7 +4,7 @@ apply plugin: 'com.jakewharton.butterknife'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.1"
+    buildToolsVersion "25.0.3"
 
     defaultConfig {
         minSdkVersion 21
@@ -53,8 +53,8 @@ dependencies {
     compile 'org.zeroturnaround:zt-zip:1.11'
     // ZeroTurnaround ZIP Library
     // https://github.com/zeroturnaround/zt-zip
-    compile 'com.jakewharton:butterknife:8.5.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+    compile 'com.jakewharton:butterknife:8.6.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
     // Bind Android views and callbacks to fields and methods.
     // https://github.com/JakeWharton/butterknife
 
