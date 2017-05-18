@@ -1,9 +1,7 @@
 package com.m.cenarius.Web.Interceptor;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -12,9 +10,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.m.cenarius.R;
 import com.m.cenarius.R2;
 import com.m.cenarius.Route.Route;
-import com.m.cenarius.Update.UpdateManager;
 
-import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,7 +35,7 @@ public class WebViewActivity extends Activity {
                 return Interceptor.perform(url, webView.getContext());
             }
         });
-//webView.loadUrl("https://baidu.com");
+
         JSONObject params = Route.getParamsJsonObject(this);
         if (params != null) {
             String url = params.getString("url");

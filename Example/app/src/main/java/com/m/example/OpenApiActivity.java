@@ -3,6 +3,7 @@ package com.m.example;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.m.cenarius.Network.OpenApi;
@@ -17,8 +18,8 @@ import butterknife.OnClick;
 
 public class OpenApiActivity extends Activity {
 
-    @BindView(R.id.urlTextView)
-    TextView urlTextView;
+    @BindView(R.id.urlEditText)
+    EditText urlEditText;
     @BindView(R.id.jsonCheckBox)
     CheckBox jsonCheckBox;
     @BindView(R.id.signTextView)
@@ -37,7 +38,7 @@ public class OpenApiActivity extends Activity {
 
     @OnClick(R.id.signButton)
     public void sign() {
-        String url = (String) urlTextView.getText();
+        String url = urlEditText.getText().toString();
         Logger.d("url: ", url);
 
         Map<String, String> headers = new TreeMap<>();
