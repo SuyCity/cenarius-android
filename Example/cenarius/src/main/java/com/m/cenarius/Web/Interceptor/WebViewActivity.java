@@ -1,6 +1,7 @@
 package com.m.cenarius.Web.Interceptor;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -34,28 +35,15 @@ public class WebViewActivity extends Activity {
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                String url = request.getUrl().toString();
-                if (!Interceptor.perform(url, webView.getContext())) {
-                    view.loadUrl(url);
-                }
-                return super.shouldOverrideUrlLoading(webView, request);
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return Interceptor.perform(url, webView.getContext());
             }
         });
-
+//webView.loadUrl("https://baidu.com");
         JSONObject params = Route.getParamsJsonObject(this);
         if (params != null) {
-            String file = params.getString("file");
             String url = params.getString("url");
-            if (file != null) {
-                File urlFile = UpdateManager.getCacheUrl(file);
-                if (urlFile.exists()) {
-                    url = "file://" + urlFile.getAbsolutePath();
-                    webView.loadUrl(url);
-                }
-            } else if (url != null) {
-                webView.loadUrl(url);
-            }
+            webView.loadUrl(url);
         }
     }
 
@@ -76,5 +64,12 @@ public class WebViewActivity extends Activity {
         webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
     }
 
-
+    @Override
+    public void onBackPressed() {
+        if (webView.canGoBack()) {
+            webView.goBack();
+        } else {
+            super.onBackPressed();
+        }
+    }
 }

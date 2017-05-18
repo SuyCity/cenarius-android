@@ -61,6 +61,10 @@ public final class UpdateManager {
         serverFilesUrl = serverUrl + File.separator + filesName;
     }
 
+    public static String getServerUrl() {
+        return serverUrl;
+    }
+
     public static void setDevelopMode(Boolean mode) {
         sharedInstance.developMode = mode;
     }

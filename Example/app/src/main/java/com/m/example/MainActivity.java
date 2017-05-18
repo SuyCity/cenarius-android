@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.m.cenarius.Route.Route;
 import com.m.cenarius.Update.UpdateManager;
 import com.orhanobut.logger.Logger;
@@ -27,8 +26,6 @@ public class MainActivity extends Activity {
 
     @OnClick(R.id.update)
     public void update() {
-        UpdateManager.setDevelopMode(false);
-        UpdateManager.setServerUrl("http://172.20.70.80/www");
         UpdateManager.update(new UpdateManager.UpdateCallback() {
             @Override
             public void completion(UpdateManager.State state, int progress) {
@@ -54,9 +51,9 @@ public class MainActivity extends Activity {
 
     @OnClick(R.id.webView)
     public void webView() {
-        String file = "vux/index.html";
+        String url = UpdateManager.getServerUrl() + "/vux/index.html";
         Map<String, String> params = new TreeMap<>();
-        params.put("file", file);
+        params.put("url", url);
         Route.open("cenarius://route/webView", this, JSON.toJSONString(params));
     }
 

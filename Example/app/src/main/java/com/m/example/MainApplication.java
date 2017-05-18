@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.m.cenarius.Native.Cenarius;
 import com.m.cenarius.Route.Route;
+import com.m.cenarius.Update.UpdateManager;
 import com.m.cenarius.Web.Interceptor.Interceptor;
 import com.m.cenarius.Web.Interceptor.RouteInterceptor;
 import com.m.cenarius.Web.Interceptor.ToastInterceptor;
@@ -36,6 +37,8 @@ public class MainApplication extends Application {
 
     void initCenarius() {
         Cenarius.initialize(this);
+        UpdateManager.setDevelopMode(false);
+        UpdateManager.setServerUrl("https://emcs-dev.infinitus.com.cn/h5/www3.0");
     }
 
     void initWeex() {
