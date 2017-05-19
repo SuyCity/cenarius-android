@@ -1,13 +1,12 @@
 package com.m.cenarius.Weex;
 
-import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.taobao.weex.WXEnvironment;
 import com.taobao.weex.WXSDKManager;
 import com.taobao.weex.adapter.IWXImgLoaderAdapter;
@@ -49,23 +48,26 @@ public class ImageAdapter implements IWXImgLoaderAdapter {
                 }
                 Glide.with(WXEnvironment.getApplication())
                         .load(temp)
-                        .into(new SimpleTarget<GlideDrawable>() {
+                        .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
-                            public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                                view.setImageDrawable(resource);
-                                if (strategy.getImageListener() != null) {
-                                    strategy.getImageListener().onImageFinish(url, view, true, null);
-                                }
-                            }
-
-                            @Override
-                            public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                                super.onLoadFailed(e, errorDrawable);
+                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
                                 if (strategy.getImageListener() != null) {
                                     strategy.getImageListener().onImageFinish(url, view, false, null);
                                 }
+                                return false;
                             }
-                        });
+
+                            @Override
+                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                if (strategy.getImageListener() != null) {
+                                    strategy.getImageListener().onImageFinish(url, view, true, null);
+                                }
+                                return false;
+                            }
+                        })
+                        .into(view);
+
+
 //                Picasso.with(WXEnvironment.getApplication())
 //                        .load(temp)
 //                        .into(view, new Callback() {
