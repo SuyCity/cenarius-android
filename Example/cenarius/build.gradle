@@ -34,7 +34,6 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
     // Android optimized event bus that simplifies communication between Activities, Fragments, Threads, Services, etc.
     // https://github.com/greenrobot/EventBus
-    compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     // An image loading and caching library for Android focused on smooth scrolling
     // https://github.com/bumptech/glide
