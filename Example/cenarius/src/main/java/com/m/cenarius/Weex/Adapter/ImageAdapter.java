@@ -1,4 +1,4 @@
-package com.m.cenarius.Weex;
+package com.m.cenarius.Weex.Adapter;
 
 import android.text.TextUtils;
 import android.widget.ImageView;

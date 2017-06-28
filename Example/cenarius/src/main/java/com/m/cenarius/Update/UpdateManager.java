@@ -171,8 +171,7 @@ public final class UpdateManager {
 
     private void downloadConfig() {
         complete(State.DOWNLOAD_CONFIG_FILE);
-        Call<ResponseBody> call = Network.requset(serverConfigUrl);
-        call.enqueue(new Callback<ResponseBody>() {
+        Network.requset(serverConfigUrl, new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
@@ -206,8 +205,7 @@ public final class UpdateManager {
         complete(State.DOWNLOAD_FILES_FILE);
         loadLocalConfig();
         loadLocalFiles();
-        Call<ResponseBody> call = Network.requset(serverFilesUrl);
-        call.enqueue(new Callback<ResponseBody>() {
+        Network.requset(serverFilesUrl, new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
@@ -257,7 +255,7 @@ public final class UpdateManager {
     }
 
     private boolean downloadFile(com.m.cenarius.Update.File file, int retryConut) {
-        Call<ResponseBody> call = Network.requset(serverUrl + File.separator + file.getPath());
+        Call<ResponseBody> call = Network.call(serverUrl + File.separator + file.getPath());
         try {
             Response<ResponseBody> response = call.execute();
             if (response.isSuccessful()) {

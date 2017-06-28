@@ -9,7 +9,7 @@ import com.m.cenarius.Web.Interceptor.Interceptor;
 import com.m.cenarius.Web.Interceptor.RouteInterceptor;
 import com.m.cenarius.Web.Interceptor.ToastInterceptor;
 import com.m.cenarius.Web.Interceptor.WebViewActivity;
-import com.m.cenarius.Weex.ImageAdapter;
+import com.m.cenarius.Weex.Adapter.ImageAdapter;
 import com.m.cenarius.Weex.WeexActivity;
 import com.taobao.weex.InitConfig;
 import com.taobao.weex.WXSDKEngine;
