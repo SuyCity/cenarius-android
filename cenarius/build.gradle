@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'realm-android'
 
 android {
@@ -24,45 +25,47 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api fileTree(dir: 'libs', include: ['*.jar'])
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-
-    implementation 'com.android.support:appcompat-v7:25.4.0'
+    api "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    api 'com.android.support:appcompat-v7:25.4.0'
     testImplementation 'junit:junit:4.12'
 
-    implementation 'com.github.GrenderG:Toasty:1.2.3'
+    api 'com.github.GrenderG:Toasty:1.2.3'
     // The usual Toast, but with steroids
     // https://github.com/GrenderG/Toasty
-    implementation 'com.orhanobut:logger:1.15'
+    api 'com.orhanobut:logger:1.15'
     // Simple, pretty and powerful logger for android
     // https://github.com/orhanobut/logger
-    implementation 'com.luffykou:android-common-utils:1.1.3'
+    api 'com.luffykou:android-common-utils:1.1.3'
     // Android Common Utils or Helper.
     // https://github.com/litesuits/android-common
-    implementation 'org.greenrobot:eventbus:3.0.0'
+    api 'org.greenrobot:eventbus:3.0.0'
     // Android optimized event bus that simplifies communication between Activities, Fragments, Threads, Services, etc.
     // https://github.com/greenrobot/EventBus
-    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    api 'com.github.bumptech.glide:glide:3.7.0'
     // An image loading and caching library for Android focused on smooth scrolling
     // https://github.com/bumptech/glide
-    implementation 'com.taobao.android:weex_sdk:0.11.0'
-    implementation 'com.android.support:appcompat-v7:25.4.0'
-    implementation 'com.android.support:recyclerview-v7:25.4.0'
-    implementation 'com.android.support:support-v4:25.4.0'
+    api 'com.taobao.android:weex_sdk:0.11.0'
+    api 'com.android.support:recyclerview-v7:25.4.0'
+    api 'com.android.support:support-v4:25.4.0'
     // A framework for building Mobile cross-platform UI
     // https://github.com/apache/incubator-weex
-    implementation 'com.alibaba:fastjson:1.1.56.android'
+    api 'com.alibaba:fastjson:1.1.56.android'
     // A fast JSON parser/generator for Java
     // https://github.com/alibaba/fastjson
-    implementation 'com.squareup.retrofit2:retrofit:2.2.0'
+    api 'com.squareup.retrofit2:retrofit:2.2.0'
     // Type-safe HTTP client for Android and Java by Square, Inc.
     // https://github.com/square/retrofit
-    implementation 'org.zeroturnaround:zt-zip:1.11'
+    api 'org.zeroturnaround:zt-zip:1.11'
     // ZeroTurnaround ZIP Library
     // https://github.com/zeroturnaround/zt-zip
-    implementation 'com.kaopiz:kprogresshud:1.0.5'
+    api 'com.kaopiz:kprogresshud:1.0.5'
     // An implement of ProgressHUD for Android, similar to MBProgressHUD
     // https://github.com/Kaopiz/KProgressHUD
+}
+repositories {
+    mavenCentral()
 }
