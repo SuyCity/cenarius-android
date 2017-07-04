@@ -53,7 +53,7 @@ class Network {
         val client: OkHttpClient = OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS).connectTimeout(5, TimeUnit.SECONDS).retryOnConnectionFailure(true).build()
         val mediaTypeJSON = MediaType.parse(OpenApi.contentTypeValue)
 
-        fun call(url: String, method: HTTPMethod = HTTPMethod.GET, parameters: Map<String, String> = TreeMap<String, String>(), headers: Map<String, String> = TreeMap<String, String>()): Call<ResponseBody> {
+        fun call(url: String, method: HTTPMethod = HTTPMethod.GET, parameters: Map<String, String> = TreeMap(), headers: Map<String, String> = TreeMap()): Call<ResponseBody> {
             val retrofit = Retrofit.Builder().baseUrl(url + File.separator).client(client).build()
             val service = retrofit.create(Service::class.java)
 
@@ -72,7 +72,7 @@ class Network {
             }
         }
 
-        fun request(url: String, method: HTTPMethod = HTTPMethod.GET, parameters: Map<String, String> = TreeMap<String, String>(), headers: Map<String, String> = TreeMap<String, String>(), callback: Callback<ResponseBody>) {
+        fun request(url: String, method: HTTPMethod = HTTPMethod.GET, parameters: Map<String, String> = TreeMap(), headers: Map<String, String> = TreeMap(), callback: Callback<ResponseBody>) {
             val call = call(url, method, parameters, headers)
             call.enqueue(callback)
         }

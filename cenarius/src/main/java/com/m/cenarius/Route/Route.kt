@@ -1,14 +1,14 @@
 package com.m.cenarius.Route
 
 import android.app.Activity
+import android.app.Fragment
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
 
-import com.alibaba.fastjson.JSON
-import com.alibaba.fastjson.JSONObject
+import com.m.cenarius.Extension.*
 import com.m.cenarius.Native.Cenarius
-import com.m.cenarius.Utils.UrlUtil
+import com.m.cenarius.R
+
 import java.util.TreeMap
 
 /**
@@ -16,7 +16,8 @@ import java.util.TreeMap
  */
 
 class Route {
-    private val routes = TreeMap<String, Class<*>>()
+
+    private val routes: MutableMap<String, Class<*>> = TreeMap()
 
     companion object {
 
@@ -26,25 +27,30 @@ class Route {
             sharedInstance.routes.put(path, controller)
         }
 
-        @JvmOverloads fun open(url: String, from: Context?, extraJsonString: String? = null) {
-            val toControllerType = sharedInstance.routes[UrlUtil.getPath(url)]
-            if (toControllerType != null) {
-                val queryParameters = UrlUtil.getParameters(url)
-                val fromViewController = from ?: Cenarius.context
-                val intent = Intent(fromViewController, toControllerType)
-                if (extraJsonString != null) {
-                    intent.putExtra("params", extraJsonString)
-                } else {
-                    val params = UrlUtil.getParamsJsonString(url)
-                    intent.putExtra("params", params)
-                }
-                fromViewController.startActivity(intent)
-            }
+        fun open(url: String, from: Context? = null) {
+            val path = url.getPath()
+            val extraJsonString = url.getParamsJsonString()
+            val present = url.getParameters()["present"] == "true"
+
+            open(path, extraJsonString, from, present)
         }
 
-        fun getParamsJsonObject(activity: Activity): JSONObject {
-            val bundle = activity.intent.extras
-            return JSON.parseObject(bundle.getString("params"))
+        fun open(path: String, extraJsonString: String? = null, from: Context? = Cenarius.context, present: Boolean = false) {
+            val toControllerType = sharedInstance.routes[path]
+            if (toControllerType != null) {
+                val intent = Intent(from, toControllerType)
+                if (extraJsonString != null) {
+                    intent.putExtra("params", extraJsonString)
+                }
+                from?.startActivity(intent)
+                if (present) {
+                    if (from is Activity) {
+                        from.overridePendingTransition(R.anim.present_enter, R.anim.present_exit)
+                    } else if (from is Fragment) {
+                        from.activity.overridePendingTransition(R.anim.present_enter, R.anim.present_exit)
+                    }
+                }
+            }
         }
     }
 }
