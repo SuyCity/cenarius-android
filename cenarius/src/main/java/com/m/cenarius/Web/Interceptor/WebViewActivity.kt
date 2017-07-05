@@ -6,43 +6,34 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 
-import com.alibaba.fastjson.JSONObject
+import com.m.cenarius.Extension.getParamsJsonObject
 import com.m.cenarius.R
-import com.m.cenarius.R2
-import com.m.cenarius.Route.Route
 
-
-import butterknife.BindView
-import butterknife.ButterKnife
+import kotlinx.android.synthetic.main.activity_web_view.*
 
 class WebViewActivity : Activity() {
-
-    @BindView(R2.id.webView)
-    internal var webView: WebView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_web_view)
 
-        ButterKnife.bind(this)
-
         setupWebView()
 
-        webView!!.setWebViewClient(object : WebViewClient() {
+        webView.setWebViewClient(object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                return Interceptor.perform(url, webView!!.context)
+                return Interceptor.perform(url, webView.context)
             }
         })
 
-        val params = Route.getParamsJsonObject(this)
+        val params = getParamsJsonObject()
         if (params != null) {
             val url = params.getString("url")
-            webView!!.loadUrl(url)
+            webView.loadUrl(url)
         }
     }
 
     private fun setupWebView() {
-        val webSettings = webView!!.settings
+        val webSettings = webView.settings
         webSettings.allowContentAccess = true
         webSettings.allowFileAccess = true
         webSettings.allowFileAccessFromFileURLs = true
@@ -59,8 +50,8 @@ class WebViewActivity : Activity() {
     }
 
     override fun onBackPressed() {
-        if (webView!!.canGoBack()) {
-            webView!!.goBack()
+        if (webView.canGoBack()) {
+            webView.goBack()
         } else {
             super.onBackPressed()
         }

@@ -9,7 +9,7 @@ import java.util.ArrayList
 
 fun Map<String, String>.toQuery(): String {
     val pairs = ArrayList<String>()
-    for (key in this.keys) {
+    for (key in keys) {
         pairs.add(key.encodeURIComponent() + "=" + this[key]!!.encodeURIComponent())
     }
     return TextUtils.join("&", pairs)
