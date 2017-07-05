@@ -63,9 +63,9 @@ fun String?.queryToParameters(): Map<String, String> {
     for (key in parametersCombined.keys) {
         val values = parametersCombined[key]
         Collections.sort(values)
-        var value = values!!.get(0)
+        var value = values!![0]
         for (i in 1..values!!.size - 1) {
-            value = value + key + values.get(i)
+            value = value + key + values[i]
         }
         results.put(key, value)
     }

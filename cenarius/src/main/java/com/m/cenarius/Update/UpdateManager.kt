@@ -39,7 +39,7 @@ import retrofit2.Response
  * `UpdateManager` 提供更新能力。
  */
 
-class UpdateManager private constructor() {
+class UpdateManager {
 
     enum class State {
         UNZIP_WWW, //解压www
@@ -54,28 +54,73 @@ class UpdateManager private constructor() {
         //更新文件成功
     }
 
+    companion object {
+
+//        fun setServerUrl(url: String) {
+//            UpdateManager.serverUrl = url
+//        }
+
+//        fun setDevelopMode(mode: Boolean?) {
+//            sharedInstance.developMode = mode
+//        }
+
+        fun getCacheUrl(file: String): File {
+            return File(cacheUrl, file)
+        }
+
+        fun update(callback: UpdateCallback) {
+            sharedInstance.updateAction(callback)
+        }
+
+        private val wwwName = "www"
+        private val zipName = "www.zip"
+        private val filesName = "cenarius-files.json"
+        private val configName = "cenarius-config.json"
+        private val dbName = "cenarius-files.realm"
+        private val retryCount = 5
+        private val maxConcurrentOperationCount = 2
+
+        private val resourceUrl = wwwName
+        private val resourceConfigUrl = resourceUrl + File.separator + configName
+        private val resourceFilesUrl = resourceUrl + File.separator + filesName
+        private val resourceZipUrl = resourceUrl + File.separator + zipName
+        val cacheUrl: File = Cenarius.context.getDir(wwwName, Context.MODE_PRIVATE)
+        private val cacheConfigUrl = File(cacheUrl, configName)
+        /*设置远程资源地址*/
+        var serverUrl: String? = null
+            set(url) {
+                field = url
+                serverConfigUrl = serverUrl + File.separator + configName
+                serverFilesUrl = serverUrl + File.separator + filesName
+            }
+        private lateinit var serverConfigUrl: String
+        private lateinit var serverFilesUrl: String
+
+        private val sharedInstance = UpdateManager()
+    }
+
     /*更新*/
     interface UpdateCallback {
         fun completion(state: State, progress: Int)
     }
 
-    private var developMode: Boolean? = false
-    private var updateCallback: UpdateCallback? = null
+//    private var developMode: Boolean? = false
+    private lateinit var updateCallback: UpdateCallback
     private var progress = 0
-    private var isDownloadFileError: Boolean? = false
+    private var isDownloadFileError = false
     private var downloadFilesCount = 0
     private var unzipFilesCount = 0
 
     private val mainRealm = Realm.getInstance(RealmConfiguration.Builder().name(dbName).build())
 
-    private var resourceConfig: Config? = null
-    private var resourceFiles: List<com.m.cenarius.Update.File>? = null
+    private lateinit var resourceConfig: Config
+    private lateinit var resourceFiles: List<com.m.cenarius.Update.File>
     private var cacheConfig: Config? = null
-    private var cacheFiles: RealmResults<FileRealm>? = null
-    private var serverConfig: Config? = null
-    private var serverConfigData: ByteArray? = null
-    private var serverFiles: List<com.m.cenarius.Update.File>? = null
-    private var downloadFiles: List<com.m.cenarius.Update.File>? = null
+    private lateinit var cacheFiles: RealmResults<FileRealm>
+    private lateinit var serverConfig: Config
+    private lateinit var serverConfigData: ByteArray
+    private lateinit var serverFiles: List<com.m.cenarius.Update.File>
+    private lateinit var downloadFiles: List<com.m.cenarius.Update.File>
 
     init {
         EventBus.getDefault().register(this)
@@ -83,11 +128,11 @@ class UpdateManager private constructor() {
 
     private fun updateAction(callback: UpdateCallback) {
         updateCallback = callback
-        // 开发模式，直接成功
-        if (developMode!!) {
-            complete(State.UPDATE_SUCCESS)
-            return
-        }
+//        // 开发模式，直接成功
+//        if (developMode!!) {
+//            complete(State.UPDATE_SUCCESS)
+//            return
+//        }
 
         // 重置变量
         progress = 0
@@ -128,7 +173,7 @@ class UpdateManager private constructor() {
 
     private fun downloadConfig() {
         complete(State.DOWNLOAD_CONFIG_FILE)
-        Network.requset(serverConfigUrl, object : Callback<ResponseBody> {
+        Network.request(serverConfigUrl, callback = object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
                     try {
@@ -161,13 +206,13 @@ class UpdateManager private constructor() {
         complete(State.DOWNLOAD_FILES_FILE)
         loadLocalConfig()
         loadLocalFiles()
-        Network.requset(serverFilesUrl, object : Callback<ResponseBody> {
+        Network.request(serverFilesUrl, callback =  object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
                     try {
                         serverFiles = JSON.parseArray(response.body().string(), com.m.cenarius.Update.File::class.java)
                         downloadFiles = getDownloadFiles(serverFiles)
-                        if (downloadFiles!!.size > 0) {
+                        if (downloadFiles.isNotEmpty()) {
                             downloadFiles(downloadFiles)
                         } else {
                             saveConfig()
@@ -191,23 +236,23 @@ class UpdateManager private constructor() {
 
     private fun downloadFiles(files: List<com.m.cenarius.Update.File>) {
         val smallExecutor = SmartExecutor()
-        smallExecutor.setCoreSize(maxConcurrentOperationCount)
-        smallExecutor.setQueueSize(files.size)
-        smallExecutor.setSchedulePolicy(SchedulePolicy.FirstInFistRun)
-        smallExecutor.setOverloadPolicy(OverloadPolicy.ThrowExecption)
+        smallExecutor.coreSize = maxConcurrentOperationCount
+        smallExecutor.queueSize = files.size
+        smallExecutor.schedulePolicy = SchedulePolicy.FirstInFistRun
+        smallExecutor.overloadPolicy = OverloadPolicy.ThrowExecption
         downloadFilesCount = 0
         isDownloadFileError = false
         for (file in files) {
-            smallExecutor.execute(Runnable {
-                if (!downloadFile(file, retryConut)) {
+            smallExecutor.execute({
+                if (!downloadFile(file, retryCount)) {
                     smallExecutor.cancelWaitingTask(null)
                 }
             })
         }
     }
 
-    private fun downloadFile(file: com.m.cenarius.Update.File, retryConut: Int): Boolean {
-        val call = Network.call(this.serverUrl + File.separator + file.path)
+    private fun downloadFile(file: com.m.cenarius.Update.File, retryCount: Int): Boolean {
+        val call = Network.call(UpdateManager.serverUrl + File.separator + file.path)
         try {
             val response = call.execute()
             if (response.isSuccessful) {
@@ -219,12 +264,12 @@ class UpdateManager private constructor() {
             Logger.e(e, null)
         }
 
-        return downloadFileRetry(file, retryConut)
+        return downloadFileRetry(file, retryCount)
     }
 
-    private fun downloadFileRetry(file: com.m.cenarius.Update.File, retryConut: Int): Boolean {
-        if (retryConut > 0) {
-            return downloadFile(file, retryConut - 1)
+    private fun downloadFileRetry(file: com.m.cenarius.Update.File, retryCount: Int): Boolean {
+        if (retryCount > 0) {
+            return downloadFile(file, retryCount - 1)
         } else {
             downloadFileError()
             return false
@@ -268,7 +313,7 @@ class UpdateManager private constructor() {
     }
 
     private fun shouldDownload(serverFile: com.m.cenarius.Update.File): Boolean {
-        for (cacheFile in cacheFiles!!) {
+        for (cacheFile in cacheFiles) {
             if (TextUtils.equals(cacheFile.path, serverFile.path) && TextUtils.equals(cacheFile.md5, serverFile.md5)) {
                 return false
             }
@@ -276,10 +321,10 @@ class UpdateManager private constructor() {
         return true
     }
 
-    private //没有缓存或者缓存比预置低
-    val isWwwFolderNeedsToBeInstalled: Boolean
+    //没有缓存或者缓存比预置低
+    private val isWwwFolderNeedsToBeInstalled: Boolean
         get() {
-            if (cacheConfig == null || VersionUtil.compareVersion(cacheConfig!!.release, resourceConfig!!.release) < 0) {
+            if (cacheConfig == null || VersionUtil.compareVersion(cacheConfig!!.release, resourceConfig.release) < 0) {
                 return true
             }
             return false
@@ -315,7 +360,7 @@ class UpdateManager private constructor() {
 
     private fun unzipFileSuccess() {
         unzipFilesCount++
-        var progress = unzipFilesCount * 100 / resourceFiles!!.size
+        var progress = unzipFilesCount * 100 / resourceFiles.size
         if (shouldDownloadWww()) {
             progress /= 2
         }
@@ -329,9 +374,9 @@ class UpdateManager private constructor() {
         if (hasMinVersion(serverConfig)) {
             // 满足最小版本要求
             if (isWwwFolderNeedsToBeInstalled) {
-                return VersionUtil.compareVersion(serverConfig!!.release, resourceConfig!!.release) > 0
+                return VersionUtil.compareVersion(serverConfig.release, resourceConfig.release) > 0
             } else {
-                return VersionUtil.compareVersion(serverConfig!!.release, cacheConfig!!.release) > 0
+                return VersionUtil.compareVersion(serverConfig.release, cacheConfig!!.release) > 0
             }
         }
         return false
@@ -354,12 +399,12 @@ class UpdateManager private constructor() {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    protected fun onCompleteEvent(event: CompleteEvent) {
-        updateCallback!!.completion(event.state, progress)
+    fun onCompleteEvent(event: CompleteEvent) {
+        updateCallback.completion(event.state, progress)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    protected fun onUnzipSuccessEvent(event: UnzipSuccessEvent) {
+    fun onUnzipSuccessEvent(event: UnzipSuccessEvent) {
         try {
             val inputStream = Cenarius.context.assets.open(resourceConfigUrl)
             FileUtils.copyInputStreamToFile(inputStream, cacheConfigUrl)
@@ -376,83 +421,40 @@ class UpdateManager private constructor() {
     }
 
 
-    private class CompleteEvent private constructor(var state: State)
+    class CompleteEvent constructor(var state: State)
 
-    private class UnzipSuccessEvent
+    class UnzipSuccessEvent
 
-    private class DownloadFileSuccessEvent private constructor(var file: com.m.cenarius.Update.File)
+    class DownloadFileSuccessEvent constructor(var file: com.m.cenarius.Update.File)
 
-    private class DownloadFileErrorEvent
+    class DownloadFileErrorEvent
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    protected fun onDownloadFileErrorEvent(event: DownloadFileErrorEvent) {
-        if ((!isDownloadFileError)!!) {
+    fun onDownloadFileErrorEvent(event: DownloadFileErrorEvent) {
+        if (!isDownloadFileError) {
             isDownloadFileError = true
             complete(State.DOWNLOAD_FILES_ERROR)
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    protected fun onDownloadFileSuccessEvent(event: DownloadFileSuccessEvent) {
-        if (isDownloadFileError!!) {
+    fun onDownloadFileSuccessEvent(event: DownloadFileSuccessEvent) {
+        if (isDownloadFileError) {
             return
         }
         mainRealm.executeTransaction { realm -> realm.insertOrUpdate(event.file.toRealm()) }
         downloadFilesCount += 1
         val unzipProgress = progress
-        val downloadProgress = downloadFilesCount * (100 - unzipProgress) / downloadFiles!!.size
+        val downloadProgress = downloadFilesCount * (100 - unzipProgress) / downloadFiles.size
         val progress = unzipProgress + downloadProgress
         if (this.progress != progress) {
             this.progress = progress
             complete(State.DOWNLOAD_FILES)
         }
-        if (downloadFilesCount == downloadFiles!!.size) {
+        if (downloadFilesCount == downloadFiles.size) {
             saveConfig()
             saveFiles(serverFiles)
             complete(State.UPDATE_SUCCESS)
         }
     }
-
-    companion object {
-
-        fun setDevelopMode(mode: Boolean?) {
-            sharedInstance.developMode = mode
-        }
-
-        fun getCacheUrl(file: String): File {
-            return File(cacheUrl, file)
-        }
-
-        fun update(callback: UpdateCallback) {
-            sharedInstance.updateAction(callback)
-        }
-
-        private val wwwName = "www"
-        private val zipName = "www.zip"
-        private val filesName = "cenarius-files.json"
-        private val configName = "cenarius-config.json"
-        private val dbName = "cenarius-files.realm"
-        private val retryConut = 5
-        private val maxConcurrentOperationCount = 2
-
-        private val resourceUrl = wwwName
-        private val resourceConfigUrl = resourceUrl + File.separator + configName
-        private val resourceFilesUrl = resourceUrl + File.separator + filesName
-        private val resourceZipUrl = resourceUrl + File.separator + zipName
-        val cacheUrl = Cenarius.context.getDir(wwwName, Context.MODE_PRIVATE)
-        private val cacheConfigUrl = File(cacheUrl, configName)
-        /*设置远程资源地址*/
-        var serverUrl: String? = null
-            set(url) {
-                field = url
-                serverConfigUrl = this.serverUrl + File.separator + configName
-                serverFilesUrl = this.serverUrl + File.separator + filesName
-            }
-        private var serverConfigUrl: String? = null
-        private var serverFilesUrl: String? = null
-
-        private val sharedInstance = UpdateManager()
-    }
-
-
 }

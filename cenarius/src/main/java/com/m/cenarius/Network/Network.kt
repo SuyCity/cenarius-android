@@ -37,7 +37,7 @@ class Network {
     private interface Service {
 
         @GET
-        operator fun get(@Url url: String, @QueryMap parameters: Map<String, String>, @HeaderMap headers: Map<String, String>): Call<ResponseBody>
+        fun get(@Url url: String, @QueryMap parameters: Map<String, String>, @HeaderMap headers: Map<String, String>): Call<ResponseBody>
 
         @FormUrlEncoded
         @POST
@@ -51,7 +51,7 @@ class Network {
     companion object {
 
         val client: OkHttpClient = OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS).connectTimeout(5, TimeUnit.SECONDS).retryOnConnectionFailure(true).build()
-        val mediaTypeJSON = MediaType.parse(OpenApi.contentTypeValue)
+        val mediaTypeJSON: MediaType = MediaType.parse(OpenApi.contentTypeValue)
 
         fun call(url: String, method: HTTPMethod = HTTPMethod.GET, parameters: Map<String, String> = TreeMap(), headers: Map<String, String> = TreeMap()): Call<ResponseBody> {
             val retrofit = Retrofit.Builder().baseUrl(url + File.separator).client(client).build()
