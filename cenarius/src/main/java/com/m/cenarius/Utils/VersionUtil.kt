@@ -65,25 +65,26 @@ object VersionUtil {
      * *
      * @return
      */
-    fun compareVersion(version1: String?, version2: String?): Int {
-        var version1 = version1
-        var version2 = version2
-        if (version1 == null) {
-            version1 = "0"
-        }
-        if (version2 == null) {
-            version2 = "0"
-        }
-        val versionArray1 = version1.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()//注意此处为正则匹配，不能用"."；
-        val versionArray2 = version2.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+    fun compareVersion(v1: String?, v2: String?): Int {
+        val version1 = v1 ?: "0"
+        val version2 = v2 ?: "0"
+        val versionArray1: List<String> = version1.split("\\.")//注意此处为正则匹配，不能用"."；
+        val versionArray2: List<String> = version2.split("\\.")
         var idx = 0
         val minLength = Math.min(versionArray1.size, versionArray2.size)//取最小长度值
         var diff = 0
-        while (idx < minLength
-                && (diff = versionArray1[idx].length - versionArray2[idx].length) == 0//先比较长度
-
-                && (diff = versionArray1[idx].compareTo(versionArray2[idx])) == 0) {//再比较字符
-            ++idx
+        while (idx < minLength) {
+            diff = versionArray1[idx].length - versionArray2[idx].length//先比较长度
+            if (diff == 0) {
+                diff = versionArray1[idx].compareTo(versionArray2[idx])//再比较字符
+                if (diff == 0) {
+                    ++idx
+                } else {
+                    break
+                }
+            } else {
+                break
+            }
         }
         //如果已经分出大小，则直接返回，如果未分出大小，则再比较位数，有子版本的为大；
         diff = if (diff != 0) diff else versionArray1.size - versionArray2.size
