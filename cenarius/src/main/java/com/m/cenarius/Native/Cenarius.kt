@@ -7,7 +7,7 @@ import io.realm.Realm
 /**
  * Created by m on 2017/7/3.
  */
-class Cenarius {
+open class Cenarius {
 
     companion object {
 

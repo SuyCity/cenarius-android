@@ -4,10 +4,10 @@ package com.m.cenarius.Update
  * Created by m on 2017/4/26.
  */
 
-class Config {
+open class Config {
 
-    var name: String? = null
-    var ios_min_version: String? = null
-    var android_min_version: String? = null
-    var release: String? = null
+    open var name: String? = null
+    open var ios_min_version: String? = null
+    open var android_min_version: String? = null
+    open var release: String? = null
 }

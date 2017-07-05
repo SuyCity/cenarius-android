@@ -7,9 +7,9 @@ import io.realm.annotations.PrimaryKey
  * Created by m on 2017/4/26.
  */
 
-class FileRealm : RealmObject() {
+open class FileRealm : RealmObject() {
 
     @PrimaryKey
-    var path: String? = null
-    var md5: String? = null
+    open var path: String? = null
+    open var md5: String? = null
 }

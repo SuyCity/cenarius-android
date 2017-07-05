@@ -4,12 +4,12 @@ package com.m.cenarius.Update
  * Created by m on 2017/5/4.
  */
 
-class File {
+open class File {
 
-    var path: String? = null
-    var md5: String? = null
+    open var path: String? = null
+    open var md5: String? = null
 
-    fun toRealm(): FileRealm {
+    open fun toRealm(): FileRealm {
         val fileRealm = FileRealm()
         fileRealm.path = path
         fileRealm.md5 = md5

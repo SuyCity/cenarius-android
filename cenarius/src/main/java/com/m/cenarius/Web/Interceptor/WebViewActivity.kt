@@ -11,7 +11,7 @@ import com.m.cenarius.R
 
 import kotlinx.android.synthetic.main.activity_web_view.*
 
-class WebViewActivity : Activity() {
+open class WebViewActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +32,7 @@ class WebViewActivity : Activity() {
         }
     }
 
-    private fun setupWebView() {
+    open fun setupWebView() {
         val webSettings = webView.settings
         webSettings.allowContentAccess = true
         webSettings.allowFileAccess = true

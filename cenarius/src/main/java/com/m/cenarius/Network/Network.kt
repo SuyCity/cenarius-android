@@ -25,7 +25,7 @@ import retrofit2.http.Url
  * Created by m on 2017/4/30.
  */
 
-class Network {
+open class Network {
 
     enum class HTTPMethod {
         GET,

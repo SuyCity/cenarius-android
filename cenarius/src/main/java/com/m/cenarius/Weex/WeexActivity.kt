@@ -16,9 +16,9 @@ import com.taobao.weex.WXSDKInstance
 
 import java.io.IOException
 
-class WeexActivity : Activity(), IWXRenderListener {
+open class WeexActivity : Activity(), IWXRenderListener {
 
-    internal var mWXSDKInstance: WXSDKInstance? = null
+    open var mWXSDKInstance: WXSDKInstance? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
