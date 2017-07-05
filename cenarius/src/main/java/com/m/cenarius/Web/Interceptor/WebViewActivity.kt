@@ -6,7 +6,7 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 
-import com.m.cenarius.Extension.getParamsJsonObject
+import com.m.cenarius.Extension.*
 import com.m.cenarius.R
 
 import kotlinx.android.synthetic.main.activity_web_view.*

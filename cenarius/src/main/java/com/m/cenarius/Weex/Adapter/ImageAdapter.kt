@@ -1,6 +1,5 @@
 package com.m.cenarius.Weex.Adapter
 
-import android.text.TextUtils
 import android.widget.ImageView
 
 import com.bumptech.glide.Glide
@@ -24,7 +23,7 @@ class ImageAdapter : IWXImgLoaderAdapter {
             if (view == null || view.layoutParams == null) {
                 return@Runnable
             }
-            if (TextUtils.isEmpty(url)) {
+            if (url.isEmpty()) {
                 view.setImageBitmap(null)
                 return@Runnable
             }
@@ -35,7 +34,7 @@ class ImageAdapter : IWXImgLoaderAdapter {
             if (view.layoutParams.width <= 0 || view.layoutParams.height <= 0) {
                 return@Runnable
             }
-            if (!TextUtils.isEmpty(strategy.placeHolder)) {
+            if (!strategy.placeHolder.isEmpty()) {
                 //                    Glide.with(WXEnvironment.getApplication()).load(temp).placeholder(0).into(view);
                 //                    Picasso.Builder builder=new Picasso.Builder(WXEnvironment.getApplication());
                 //                    Picasso picasso=builder.build();

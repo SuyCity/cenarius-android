@@ -5,17 +5,15 @@ import android.os.Bundle
 import android.view.View
 import android.view.Window
 
-import com.alibaba.fastjson.JSONObject
 import com.litesuits.common.io.FileUtils
+import com.m.cenarius.Extension.*
 import com.m.cenarius.R
 
-import com.m.cenarius.Route.Route
 import com.m.cenarius.Update.UpdateManager
 import com.orhanobut.logger.Logger
 import com.taobao.weex.IWXRenderListener
 import com.taobao.weex.WXSDKInstance
 
-import java.io.File
 import java.io.IOException
 
 class WeexActivity : Activity(), IWXRenderListener {
@@ -26,12 +24,12 @@ class WeexActivity : Activity(), IWXRenderListener {
         super.onCreate(savedInstanceState)
 
         requestWindowFeature(Window.FEATURE_NO_TITLE)
-        setContentView(R.layout.activity_wx)
+        setContentView(R.layout.activity_weex)
 
         mWXSDKInstance = WXSDKInstance(this)
         mWXSDKInstance!!.registerRenderListener(this)
 
-        val params = Route.getParamsJsonObject(this)
+        val params = getParamsJsonObject()
         if (params != null) {
             val file = params.getString("file")
             if (file != null) {
@@ -64,35 +62,27 @@ class WeexActivity : Activity(), IWXRenderListener {
     }
 
     override fun onBackPressed() {
-        mWXSDKInstance!!.fireEvent("_root", "androidback")
+        mWXSDKInstance?.fireEvent("_root", "androidback")
         super.onBackPressed()
     }
 
     override fun onResume() {
         super.onResume()
-        if (mWXSDKInstance != null) {
-            mWXSDKInstance!!.onActivityResume()
-        }
+        mWXSDKInstance?.onActivityResume()
     }
 
     override fun onPause() {
         super.onPause()
-        if (mWXSDKInstance != null) {
-            mWXSDKInstance!!.onActivityPause()
-        }
+        mWXSDKInstance?.onActivityPause()
     }
 
     override fun onStop() {
         super.onStop()
-        if (mWXSDKInstance != null) {
-            mWXSDKInstance!!.onActivityStop()
-        }
+        mWXSDKInstance?.onActivityStop()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if (mWXSDKInstance != null) {
-            mWXSDKInstance!!.onActivityDestroy()
-        }
+        mWXSDKInstance?.onActivityDestroy()
     }
 }
