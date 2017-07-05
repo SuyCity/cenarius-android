@@ -46,16 +46,12 @@ class ImageAdapter : IWXImgLoaderAdapter {
                     .load(temp)
                     .listener(object : RequestListener<String, GlideDrawable> {
                         override fun onException(e: Exception, model: String, target: Target<GlideDrawable>, isFirstResource: Boolean): Boolean {
-                            if (strategy.imageListener != null) {
-                                strategy.imageListener.onImageFinish(url, view, false, null)
-                            }
+                            strategy.imageListener?.onImageFinish(url, view, false, null)
                             return false
                         }
 
                         override fun onResourceReady(resource: GlideDrawable, model: String, target: Target<GlideDrawable>, isFromMemoryCache: Boolean, isFirstResource: Boolean): Boolean {
-                            if (strategy.imageListener != null) {
-                                strategy.imageListener.onImageFinish(url, view, true, null)
-                            }
+                            strategy.imageListener?.onImageFinish(url, view, true, null)
                             return false
                         }
                     })
