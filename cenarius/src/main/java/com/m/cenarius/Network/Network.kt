@@ -37,14 +37,14 @@ open class Network {
     private interface Service {
 
         @GET
-        fun get(@Url url: String, @QueryMap parameters: Map<String, String>, @HeaderMap headers: Map<String, String>): Call<ResponseBody>
+        fun methodGet(@Url url: String, @QueryMap parameters: Map<String, String>, @HeaderMap headers: Map<String, String>): Call<ResponseBody>
 
         @FormUrlEncoded
         @POST
-        fun post(@Url url: String, @FieldMap parameters: Map<String, String>, @HeaderMap headers: Map<String, String>): Call<ResponseBody>
+        fun methodPost(@Url url: String, @FieldMap parameters: Map<String, String>, @HeaderMap headers: Map<String, String>): Call<ResponseBody>
 
         @POST
-        fun json(@Url url: String, @Body body: RequestBody, @HeaderMap headers: Map<String, String>): Call<ResponseBody>
+        fun methodJson(@Url url: String, @Body body: RequestBody, @HeaderMap headers: Map<String, String>): Call<ResponseBody>
 
     }
 
@@ -63,12 +63,12 @@ open class Network {
                 val value = headers[OpenApi.contentTypeKey]
                 if (value != null && value.contains(OpenApi.contentTypeValue)) {
                     val body = RequestBody.create(mediaTypeJSON, parameters.toJSONString())
-                    return service.json(urlString, body, headers)
+                    return service.methodJson(urlString, body, headers)
                 } else {
-                    return service.post(urlString, parameters, headers)
+                    return service.methodPost(urlString, parameters, headers)
                 }
             } else {
-                return service.get(urlString, parameters, headers)
+                return service.methodGet(urlString, parameters, headers)
             }
         }
 
