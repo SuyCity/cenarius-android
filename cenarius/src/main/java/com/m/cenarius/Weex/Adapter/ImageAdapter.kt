@@ -1,5 +1,6 @@
 package com.m.cenarius.Weex.Adapter
 
+import android.text.TextUtils
 import android.widget.ImageView
 
 import com.bumptech.glide.Glide
@@ -18,23 +19,23 @@ import com.taobao.weex.dom.WXImageQuality
 
 class ImageAdapter : IWXImgLoaderAdapter {
 
-    override fun setImage(url: String, view: ImageView?, quality: WXImageQuality, strategy: WXImageStrategy) {
+    override fun setImage(url: String?, view: ImageView?, quality: WXImageQuality?, strategy: WXImageStrategy) {
         WXSDKManager.getInstance().postOnUiThread(Runnable {
             if (view == null || view.layoutParams == null) {
                 return@Runnable
             }
-            if (url.isEmpty()) {
+            if (TextUtils.isEmpty(url)) {
                 view.setImageBitmap(null)
                 return@Runnable
             }
             var temp = url
-            if (url.startsWith("//")) {
+            if (url!!.startsWith("//")) {
                 temp = "https:" + url
             }
             if (view.layoutParams.width <= 0 || view.layoutParams.height <= 0) {
                 return@Runnable
             }
-            if (!strategy.placeHolder.isEmpty()) {
+            if (TextUtils.isEmpty(strategy.placeHolder)) {
                 //                    Glide.with(WXEnvironment.getApplication()).load(temp).placeholder(0).into(view);
                 //                    Picasso.Builder builder=new Picasso.Builder(WXEnvironment.getApplication());
                 //                    Picasso picasso=builder.build();

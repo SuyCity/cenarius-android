@@ -47,9 +47,9 @@ fun String?.queryToParameters(): Map<String, String> {
         return results
     }
     val parametersCombined = TreeMap<String, ArrayList<String>>()
-    val pairs = this.split("&".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+    val pairs = this.split("&")
     for (pair in pairs) {
-        val keyValue = pair.split("=".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val keyValue = pair.split("=")
         val key = keyValue[0].decodeURIComponent()
         val value = keyValue[1].decodeURIComponent()
         if (parametersCombined[key] != null) {
@@ -64,7 +64,7 @@ fun String?.queryToParameters(): Map<String, String> {
         val values = parametersCombined[key]
         Collections.sort(values)
         var value = values!![0]
-        for (i in 1..values!!.size - 1) {
+        for (i in 1..values.size - 1) {
             value = value + key + values[i]
         }
         results.put(key, value)

@@ -66,6 +66,7 @@ dependencies {
     api 'com.kaopiz:kprogresshud:1.0.5'
     // An implement of ProgressHUD for Android, similar to MBProgressHUD
     // https://github.com/Kaopiz/KProgressHUD
+    api 'com.android.support.constraint:constraint-layout:1.0.2'
 }
 repositories {
     mavenCentral()
