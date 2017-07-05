@@ -1,6 +1,7 @@
 package com.m.cenarius.Extension
 
 import android.text.TextUtils
+import com.alibaba.fastjson.JSON
 import java.util.ArrayList
 
 /**
@@ -13,4 +14,8 @@ fun Map<String, String>.toQuery(): String {
         pairs.add(key.encodeURIComponent() + "=" + this[key]!!.encodeURIComponent())
     }
     return TextUtils.join("&", pairs)
+}
+
+fun Any.toJSONString(): String {
+    return JSON.toJSONString(this)
 }

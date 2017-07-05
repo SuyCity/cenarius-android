@@ -3,7 +3,6 @@ package com.m.cenarius.Network
 import android.content.SharedPreferences
 import android.util.Base64
 
-import com.alibaba.fastjson.JSON
 import com.litesuits.common.utils.HexUtil
 import com.litesuits.common.utils.MD5Util
 import com.litesuits.common.utils.RandomUtil
@@ -78,7 +77,7 @@ class OpenApi {
             var bodyString: String?
             if (parameters != null && parameters.isNotEmpty()) {
                 if (isJson) {
-                    bodyString = "openApiBodyString=" + JSON.toJSONString(parameters).encodeURIComponent()
+                    bodyString = "openApiBodyString=" + parameters.toJSONString().encodeURIComponent()
                 } else {
                     bodyString = parameters.toQuery()
                 }

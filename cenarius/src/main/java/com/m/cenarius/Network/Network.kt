@@ -1,6 +1,6 @@
 package com.m.cenarius.Network
 
-import com.alibaba.fastjson.JSON
+import com.m.cenarius.Extension.*
 import okhttp3.MediaType
 import java.io.File
 import java.util.TreeMap
@@ -62,7 +62,7 @@ class Network {
             if (method == HTTPMethod.POST) {
                 val value = headers[OpenApi.contentTypeKey]
                 if (value != null && value.contains(OpenApi.contentTypeValue)) {
-                    val body = RequestBody.create(mediaTypeJSON, JSON.toJSONString(parameters))
+                    val body = RequestBody.create(mediaTypeJSON, parameters.toJSONString())
                     return service.json(urlString, body, headers)
                 } else {
                     return service.post(urlString, parameters, headers)
