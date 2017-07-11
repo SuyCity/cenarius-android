@@ -9,10 +9,8 @@ import com.m.cenarius.Web.Interceptor.Interceptor
 import com.m.cenarius.Web.Interceptor.RouteInterceptor
 import com.m.cenarius.Web.Interceptor.ToastInterceptor
 import com.m.cenarius.Web.Interceptor.WebViewActivity
-import com.m.cenarius.Weex.Adapter.ImageAdapter
+import com.m.cenarius.Weex.Weex
 import com.m.cenarius.Weex.WeexActivity
-import com.taobao.weex.InitConfig
-import com.taobao.weex.WXSDKEngine
 
 /**
  * 注意要在Manifest中设置android:name=".MainApplication"
@@ -31,17 +29,12 @@ class MainApplication : Application() {
         initCenarius()
         registerRoute()
         registerInterceptor()
-        initWeex()
+        Weex.initWeex(this)
     }
 
     internal fun initCenarius() {
         Cenarius.initialize(this)
         UpdateManager.serverUrl = "https://emcs-dev.infinitus.com.cn/h5/www3.0"
-    }
-
-    internal fun initWeex() {
-        val config = InitConfig.Builder().setImgAdapter(ImageAdapter()).build()
-        WXSDKEngine.initialize(this, config)
     }
 
     internal fun registerRoute() {
