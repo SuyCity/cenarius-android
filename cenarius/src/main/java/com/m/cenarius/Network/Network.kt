@@ -25,26 +25,29 @@ import retrofit2.http.Url
  * Created by m on 2017/4/30.
  */
 
-open class Network {
+enum class HTTPMethod {
+    GET,
+    POST,
+    PUT,
+    DELETE
+}
 
-    enum class HTTPMethod {
-        GET,
-        POST,
-        PUT,
-        DELETE
-    }
+typealias Parameters = Map<String, Any>
+typealias HTTPHeaders = Map<String, String>
+
+open class Network {
 
     private interface Service {
 
         @GET
-        fun methodGet(@Url url: String, @QueryMap parameters: Map<String, String>, @HeaderMap headers: Map<String, String>): Call<ResponseBody>
+        fun methodGet(@Url url: String, @QueryMap parameters: Parameters, @HeaderMap headers: HTTPHeaders): Call<ResponseBody>
 
         @FormUrlEncoded
         @POST
-        fun methodPost(@Url url: String, @FieldMap parameters: Map<String, String>, @HeaderMap headers: Map<String, String>): Call<ResponseBody>
+        fun methodPost(@Url url: String, @FieldMap parameters: Parameters, @HeaderMap headers: HTTPHeaders): Call<ResponseBody>
 
         @POST
-        fun methodJson(@Url url: String, @Body body: RequestBody, @HeaderMap headers: Map<String, String>): Call<ResponseBody>
+        fun methodJson(@Url url: String, @Body body: RequestBody, @HeaderMap headers: HTTPHeaders): Call<ResponseBody>
 
     }
 
@@ -53,7 +56,7 @@ open class Network {
         val client: OkHttpClient = OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS).connectTimeout(5, TimeUnit.SECONDS).retryOnConnectionFailure(true).build()
         val mediaTypeJSON: MediaType = MediaType.parse(OpenApi.contentTypeValue)
 
-        fun call(url: String, method: HTTPMethod = HTTPMethod.GET, parameters: Map<String, String> = TreeMap(), headers: Map<String, String> = TreeMap()): Call<ResponseBody> {
+        fun call(url: String, method: HTTPMethod = HTTPMethod.GET, parameters: Parameters = TreeMap(), headers: Map<String, String> = TreeMap()): Call<ResponseBody> {
             val retrofit = Retrofit.Builder().baseUrl(url + File.separator).client(client).build()
             val service = retrofit.create(Service::class.java)
 
@@ -72,7 +75,7 @@ open class Network {
             }
         }
 
-        fun request(url: String, method: HTTPMethod = HTTPMethod.GET, parameters: Map<String, String> = TreeMap(), headers: Map<String, String> = TreeMap(), callback: Callback<ResponseBody>) {
+        fun request(url: String, method: HTTPMethod = HTTPMethod.GET, parameters: Parameters = TreeMap(), headers: HTTPHeaders = TreeMap(), callback: Callback<ResponseBody>) {
             val call = call(url, method, parameters, headers)
             call.enqueue(callback)
         }
