@@ -54,7 +54,7 @@ class OpenApi {
             sharedInstance.appSecret = appSecret
         }
 
-        fun sign(url: String, parameters: Map<String, String>?, headers: Map<String, String>?): String {
+        fun sign(url: String, parameters: Parameters?, headers: Map<String, String>?): String {
             var isOpenApi = false
             var isJson = false
             if (headers != null) {

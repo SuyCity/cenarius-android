@@ -112,3 +112,7 @@ fun String.getHost(): String {
     val uri = Uri.parse(this)
     return uri.host
 }
+
+fun String.jsonToParameters(): Map<String, Any> {
+    return JSON.parseObject(this).toMap()
+}
