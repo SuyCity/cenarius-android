@@ -56,26 +56,29 @@ open class Network {
         val client: OkHttpClient = OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS).connectTimeout(5, TimeUnit.SECONDS).retryOnConnectionFailure(true).build()
         val mediaTypeJSON: MediaType = MediaType.parse(OpenApi.contentTypeValue)
 
-        fun call(url: String, method: HTTPMethod = HTTPMethod.GET, parameters: Parameters = TreeMap(), headers: Map<String, String> = TreeMap()): Call<ResponseBody> {
+        fun call(url: String, method: HTTPMethod = HTTPMethod.GET, parameters: Parameters? = null, headers: HTTPHeaders? = null): Call<ResponseBody> {
+            val p = parameters ?: TreeMap()
+            val h = headers ?: TreeMap()
+
             val retrofit = Retrofit.Builder().baseUrl(url + File.separator).client(client).build()
             val service = retrofit.create(Service::class.java)
 
             val urlString = OpenApi.sign(url, parameters, headers)
 
             if (method == HTTPMethod.POST) {
-                val value = headers[OpenApi.contentTypeKey]
+                val value = h[OpenApi.contentTypeKey]
                 if (value != null && value.contains(OpenApi.contentTypeValue)) {
-                    val body = RequestBody.create(mediaTypeJSON, parameters.toJSONString())
-                    return service.methodJson(urlString, body, headers)
+                    val body = RequestBody.create(mediaTypeJSON, p.toJSONString())
+                    return service.methodJson(urlString, body, h)
                 } else {
-                    return service.methodPost(urlString, parameters, headers)
+                    return service.methodPost(urlString, p, h)
                 }
             } else {
-                return service.methodGet(urlString, parameters, headers)
+                return service.methodGet(urlString, p, h)
             }
         }
 
-        fun request(url: String, method: HTTPMethod = HTTPMethod.GET, parameters: Parameters = TreeMap(), headers: HTTPHeaders = TreeMap(), callback: Callback<ResponseBody>) {
+        fun request(url: String, method: HTTPMethod = HTTPMethod.GET, parameters: Parameters? = TreeMap(), headers: HTTPHeaders? = TreeMap(), callback: Callback<ResponseBody>) {
             val call = call(url, method, parameters, headers)
             call.enqueue(callback)
         }

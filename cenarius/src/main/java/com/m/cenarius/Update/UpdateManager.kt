@@ -189,7 +189,6 @@ class UpdateManager {
                     } catch (e: IOException) {
                         Logger.e(e, "downloadConfig fail")
                     }
-
                 } else {
                     complete(State.DOWNLOAD_CONFIG_FILE_ERROR)
                 }
