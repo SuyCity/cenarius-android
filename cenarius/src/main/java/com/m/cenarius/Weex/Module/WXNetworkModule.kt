@@ -1,14 +1,15 @@
 package com.m.cenarius.Weex.Module
 
 import android.text.TextUtils
+import com.alibaba.fastjson.JSON
 import com.m.cenarius.Extension.jsonToParameters
 import com.m.cenarius.Network.HTTPHeaders
 import com.m.cenarius.Network.HTTPMethod
 import com.m.cenarius.Network.Network
 import com.m.cenarius.Network.Parameters
 
-import com.taobao.weex.WXSDKEngine
 import com.taobao.weex.annotation.JSMethod
+import com.taobao.weex.bridge.JSCallback
 import com.taobao.weex.common.WXModule
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -23,11 +24,11 @@ import java.util.*
 class WXNetworkModule : WXModule() {
 
     @JSMethod
-    fun request(options: Map<String, Any>, callBackId: String) {
+    fun request(options: Map<String, Any>, callBack: JSCallback?) {
         val url = options["url"] as? String ?: ""
         var method = HTTPMethod.GET
         val m = options["method"] as? String
-        if (TextUtils.equals(m, "POST")) {
+        if (TextUtils.equals(m?.toUpperCase(), "POST")) {
             method = HTTPMethod.POST
         }
 
@@ -47,22 +48,26 @@ class WXNetworkModule : WXModule() {
                 callbackResponse["statusText"] = response.message()
                 callbackResponse["headers"] = response.headers()
                 if (response.isSuccessful) {
+                    callbackResponse["ok"] = true
                     val data = response.body().string()
                     val responseType = options["type"] as? String
                     if (responseType == "json") {
-                        data.jsonToParameters()
+                        callbackResponse["data"] = JSON.parse(data)
                     }
                 } else {
-
+                    callbackResponse["ok"] = false
                 }
+                callBack?.invoke(callbackResponse)
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-
+                val message = t.message
+                if (message != null) {
+                    callbackResponse["statusText"] = message
+                }
+                callbackResponse["ok"] = false
+                callBack?.invoke(callbackResponse)
             }
         })
-
-
-        WXSDKEngine.callback(mWXSDKInstance.instanceId, callBackId, options)
     }
 }
