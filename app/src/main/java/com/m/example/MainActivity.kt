@@ -34,17 +34,23 @@ class MainActivity : Activity() {
             override fun completion(state: UpdateManager.State, progress: Int) {
                 Logger.d(state)
                 Logger.d(progress)
-                if (state === UpdateManager.State.UNZIP_WWW) {
-                    hud.setLabel("unzip")
-                    hud.setProgress(progress)
-                } else if (state === UpdateManager.State.DOWNLOAD_FILES) {
-                    hud.setLabel("download")
-                    hud.setProgress(progress)
-                } else if (state === UpdateManager.State.UPDATE_SUCCESS) {
-                    hud.dismiss()
-                    Toasty.normal(Cenarius.context, "success").show()
-                } else if (state === UpdateManager.State.DOWNLOAD_CONFIG_FILE_ERROR || state === UpdateManager.State.DOWNLOAD_FILES_ERROR || state === UpdateManager.State.DOWNLOAD_FILES_FILE_ERROR || state === UpdateManager.State.UNZIP_WWW_ERROR) {
-                    hud.dismiss()
+                when (state) {
+                    UpdateManager.State.UNZIP_WWW -> {
+                        hud.setLabel("unzip")
+                        hud.setProgress(progress)
+                    }
+                    UpdateManager.State.DOWNLOAD_FILES -> {
+                        hud.setLabel("download")
+                        hud.setProgress(progress)
+                    }
+                    UpdateManager.State.UPDATE_SUCCESS -> {
+                        hud.dismiss()
+                        Toasty.normal(Cenarius.context, "success").show()
+                    }
+                    else -> {
+                        hud.dismiss()
+                        Toasty.error(Cenarius.context, "error").show()
+                    }
                 }
             }
         })
