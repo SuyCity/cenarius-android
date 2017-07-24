@@ -9,7 +9,7 @@ import java.util.ArrayList
  */
 
 fun Parameters.toQuery(): String {
-    var components: MutableList<Pair<String, String>> = ArrayList()
+    val components: MutableList<Pair<String, String>> = ArrayList()
     for (key in this.keys.sorted()) {
         val value = this[key]!!
         components.addAll(Pair(key, value).queryComponents())
@@ -22,11 +22,11 @@ fun Pair<String, Any>.queryComponents(): List<Pair<String, String>> {
     val key = first
     val value = second
 
-    var components: MutableList<Pair<String, String>> = ArrayList()
+    val components: MutableList<Pair<String, String>> = ArrayList()
 
     val dictionary = value as? Map<String, Any>
     val array = value as? List<Any>
-    var bool = value as? Boolean
+    val bool = value as? Boolean
     if (dictionary != null) {
         for ((nestedKey, value) in dictionary) {
             components.addAll(Pair("$key[$nestedKey]", value).queryComponents())

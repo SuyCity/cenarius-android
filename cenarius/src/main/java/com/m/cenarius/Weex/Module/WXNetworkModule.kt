@@ -11,6 +11,7 @@ import com.m.cenarius.Network.Parameters
 import com.taobao.weex.annotation.JSMethod
 import com.taobao.weex.bridge.JSCallback
 import com.taobao.weex.common.WXModule
+import com.taobao.weex.http.Status
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -44,8 +45,9 @@ class WXNetworkModule : WXModule() {
 
         Network.request(url, method, parameters, headers, object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                callbackResponse["status"] = response.code()
-                callbackResponse["statusText"] = response.message()
+                val statusCode = response.code()
+                callbackResponse["status"] = statusCode
+                callbackResponse["statusText"] = Status.getStatusText(statusCode.toString())
                 callbackResponse["headers"] = response.headers()
                 if (response.isSuccessful) {
                     callbackResponse["ok"] = true

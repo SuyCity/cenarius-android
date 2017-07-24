@@ -24,7 +24,6 @@ fun String.encodeURIComponent(): String {
         Logger.e(e, null)
         return ""
     }
-
 }
 
 fun String.decodeURIComponent(): String {
@@ -47,7 +46,7 @@ fun String?.queryToParameters(): Map<String, String> {
         return results
     }
     val parametersCombined = TreeMap<String, ArrayList<String>>()
-    val pairs = this.split("&")
+    val pairs = split("&")
     for (pair in pairs) {
         val keyValue = pair.split("=")
         val key = keyValue[0].decodeURIComponent()
@@ -78,9 +77,9 @@ fun String?.getQuery(): String? {
     if (this == null) {
         return null
     }
-    val index = this.indexOf("?")
+    val index = indexOf("?")
     if (index > -1) {
-        return this.substring(index + 1)
+        return substring(index + 1)
     }
     return null
 }

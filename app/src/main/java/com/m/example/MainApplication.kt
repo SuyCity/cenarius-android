@@ -5,11 +5,7 @@ import android.app.Application
 import com.m.cenarius.Native.Cenarius
 import com.m.cenarius.Route.Route
 import com.m.cenarius.Update.UpdateManager
-import com.m.cenarius.Web.Interceptor.Interceptor
-import com.m.cenarius.Web.Interceptor.RouteInterceptor
-import com.m.cenarius.Web.Interceptor.ToastInterceptor
 import com.m.cenarius.Web.Interceptor.WebViewActivity
-import com.m.cenarius.Weex.Weex
 import com.m.cenarius.Weex.WeexActivity
 
 /**
@@ -29,11 +25,10 @@ class MainApplication : Application() {
         initCenarius()
         registerRoute()
         registerInterceptor()
-        Weex.initWeex(this)
     }
 
     internal fun initCenarius() {
-        Cenarius.initialize(this)
+        Cenarius.initCenarius(this)
         UpdateManager.serverUrl = "https://emcs-dev.infinitus.com.cn/h5/www3.0"
     }
 
@@ -45,8 +40,8 @@ class MainApplication : Application() {
     }
 
     internal fun registerInterceptor() {
-        Interceptor.register(RouteInterceptor())
-        Interceptor.register(ToastInterceptor())
+//        Interceptor.register(RouteInterceptor())
+//        Interceptor.register(ToastInterceptor())
     }
 
 }

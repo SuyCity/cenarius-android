@@ -34,6 +34,9 @@ dependencies {
     api 'com.android.support:appcompat-v7:25.4.0'
     testImplementation 'junit:junit:4.12'
 
+    api "org.jetbrains.anko:anko:$anko_version"
+    // Pleasant Android application development
+    // https://github.com/Kotlin/anko
     api 'com.github.GrenderG:Toasty:1.2.3'
     // The usual Toast, but with steroids
     // https://github.com/GrenderG/Toasty
