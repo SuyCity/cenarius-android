@@ -41,7 +41,7 @@ class WXNetworkModule : WXModule() {
 
         val headers = options["headers"] as? HTTPHeaders
 
-        var callbackResponse: MutableMap<String, Any> = TreeMap()
+        val callbackResponse: MutableMap<String, Any> = TreeMap()
 
         Network.request(url, method, parameters, headers, object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
