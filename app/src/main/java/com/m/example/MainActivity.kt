@@ -1,6 +1,7 @@
 package com.m.example
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 
 import com.kaopiz.kprogresshud.KProgressHUD
@@ -26,6 +27,11 @@ class MainActivity : Activity() {
         openApi.setOnClickListener { sign() }
         weex.setOnClickListener { weex() }
         webView.setOnClickListener { webView() }
+        location.setOnClickListener { locationBtn() }
+    }
+
+    private fun locationBtn() {
+        startActivity(Intent(this, LocationActivity::class.java))
     }
 
     fun update() {

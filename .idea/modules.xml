@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/cenarius/cenarius.iml" filepath="$PROJECT_DIR$/cenarius/cenarius.iml" />
       <module fileurl="file://$PROJECT_DIR$/cenarius-android.iml" filepath="$PROJECT_DIR$/cenarius-android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/locationmodule/locationmodule.iml" filepath="$PROJECT_DIR$/locationmodule/locationmodule.iml" />
     </modules>
   </component>
 </project>
