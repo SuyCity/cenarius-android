@@ -10,6 +10,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/cenarius" />
+            <option value="$PROJECT_DIR$/imagemodule" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

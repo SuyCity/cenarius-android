@@ -1,1 +1,1 @@
-include ':app', ':cenarius'
+include ':app', ':cenarius', ':imagemodule'
